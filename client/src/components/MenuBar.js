@@ -1,10 +1,11 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { IconButton } from '@material-ui/core';
+import { AuthContext } from '../context/context';
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -42,35 +43,46 @@ const useStyles = makeStyles((theme) => ({
 		alignItems: 'center',
 		padding: '1rem',
 	},
-	NavItem:{
-		
-	}
+	NavItem: {},
 }));
 
 function MenuBar(props) {
 	const classes = useStyles();
-	const auth = false;
+	const {
+		state: { isAuthenticated },
+		dispatch,
+	} = React.useContext(AuthContext);
+	console.log(isAuthenticated);
 	return (
 		<div className={classes.root}>
-			<AppBar style={auth ? { width: `calc(100% - ${drawerWidth}px)` } : { width: '100%' }} className={classes.appBar}>
+			<AppBar style={isAuthenticated ? { width: `calc(100% - ${drawerWidth}px)` } : { width: '100%' }} className={classes.appBar}>
 				<Toolbar>
-					{auth ? null : <div style={{ color: '#000' }}>LOGO</div>}
+					{isAuthenticated ? null : (
+						<div style={{ color: '#000' }}>
+							<Link to='/'>LOGO</Link>
+						</div>
+					)}
 					<div style={{ flexGrow: 1 }}></div>
-					{auth ? (
+					{isAuthenticated ? (
 						<>
 							<IconButton>
 								<i className='fe fe-user'></i>
 							</IconButton>
+							<span style={{ color: '#000' }}>Welcome User</span>
 						</>
 					) : (
 						<>
-							<NavLink className={classes.NavItem} style={{margin:'0 1rem'}} to='/login'>Login</NavLink>
-							<NavLink className={classes.NavItem} to='signup'>Signup</NavLink>
+							<NavLink className={classes.NavItem} style={{ margin: '0 1rem' }} to='/login'>
+								Login
+							</NavLink>
+							<NavLink className={classes.NavItem} to='signup'>
+								Signup
+							</NavLink>
 						</>
 					)}
 				</Toolbar>
 			</AppBar>
-			{auth && (
+			{isAuthenticated && (
 				<Drawer
 					className={classes.drawer}
 					variant='permanent'
