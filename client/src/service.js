@@ -24,7 +24,7 @@ export function getHeader() {
 		},
 	};
 }
-export default {
+export const AuthService = {
 	getCurrentUser,
 	logout,
 	loginWithJWT,

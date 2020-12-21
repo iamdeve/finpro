@@ -4,9 +4,75 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
+global.fetch = require('node-fetch');
+global.navigator = () => null;
+// console.log(process.env);
+const AmazonCognitoIdentity = require('amazon-cognito-identity-js');
+const poolData = {
+	UserPoolId: process.env.pool_id,
+	ClientId: process.env.app_client_id,
+};
+const pool_region = process.env.pool_region;
+const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+
+module.exports.signupWithCognito = (req, res, next) => {
+
+	const email = req.body.email;
+	const pass = req.body.password;
+	const firstName = req.body.firstName;
+	const lastName = req.body.lastName;
+
+	const attributeList = [];
+	attributeList.push(new AmazonCognitoIdentity.CognitoUserAttribute({ Name: 'email', Value: email }));
+	attributeList.push(new AmazonCognitoIdentity.CognitoUserAttribute({ Name: 'name', Value: firstName }));
+	attributeList.push(new AmazonCognitoIdentity.CognitoUserAttribute({ Name: 'family_name', Value: lastName }));
+	userPool.signUp(email, pass, attributeList, null, function (err, result) {
+		if (err) {
+			console.log(err);
+			res.status(500).json({
+				error: err,
+			});
+		}
+		var cognitoUser = result.user;
+		console.log(cognitoUser);
+		res.status(201).json({
+			message: 'sign up successful',
+			token: cognitoUser,
+		});
+	});
+};
+
+module.exports.loginWithCognito = (req, res, next) => {
+	const email = req.body.email;
+	const pass = req.body.password;
+
+	const authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails({
+		Username: email,
+		Password: pass,
+	});
+	const userData = {
+		Username: email,
+		Pool: userPool,
+	};
+	const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+	cognitoUser.authenticateUser(authenticationDetails, {
+		onSuccess: function (result) {
+			const accesstoken = result.getAccessToken().getJwtToken();
+			return res.status(201).json({
+				token: accesstoken,
+			});
+		},
+		onFailure: function (err) {
+			return res.status(500).json({
+				message: err,
+			});
+		},
+	});
+};
+
 module.exports.signupWithEmail = (req, res, next) => {
 	const email = req.body.email;
-	const pass = req.body.pass;
+	const pass = req.body.password;
 	const firstName = req.body.firstName;
 	const lastName = req.body.lastName;
 
@@ -43,13 +109,14 @@ module.exports.signupWithEmail = (req, res, next) => {
 								const password = result.password;
 								const firstName = result.firstName;
 								const lastName = result.lastName;
-								const token = await jwt.sign({ id, email, password, roleId, firstName, lastName, isAdmin, isSuperAdmin, route, country }, process.env.JWT_SESSION_KEY, { expiresIn: '60d' });
+								const token = await jwt.sign({ id, email, password, firstName, lastName }, process.env.JWT_SESSION_KEY, { expiresIn: '60d' });
 								res.status(201).json({
 									message: 'sign up successful',
 									token: token,
 								});
 							})
 							.catch((err) => {
+								console.log(`last final error ${err}`);
 								res.status(500).json({
 									error: err,
 								});
@@ -59,6 +126,7 @@ module.exports.signupWithEmail = (req, res, next) => {
 			}
 		})
 		.catch((err) => {
+			console.log(`final error ${err}`);
 			res.status(500).json({
 				error: err,
 			});
@@ -67,7 +135,7 @@ module.exports.signupWithEmail = (req, res, next) => {
 
 module.exports.loginWithEmail = (req, res, next) => {
 	const email = req.body.email;
-	const pass = req.body.pass;
+	const pass = req.body.password;
 	console.log(pass);
 	Auth.findOne({ email: email })
 		.then(async (result) => {

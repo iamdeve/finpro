@@ -4,8 +4,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import { IconButton } from '@material-ui/core';
+import { Menu, MenuItem, Button } from '@material-ui/core';
 import { AuthContext } from '../context/context';
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -43,7 +44,13 @@ const useStyles = makeStyles((theme) => ({
 		alignItems: 'center',
 		padding: '1rem',
 	},
-	NavItem: {},
+	MENU: {
+		width: '100%',
+		height: '100%',
+		display: 'flex',
+		justifyContent: 'space-around',
+		color: 'blue',
+	},
 }));
 
 function MenuBar(props) {
@@ -52,7 +59,21 @@ function MenuBar(props) {
 		state: { isAuthenticated },
 		dispatch,
 	} = React.useContext(AuthContext);
-	console.log(isAuthenticated);
+	const [anchorEl, setAnchorEl] = React.useState(null);
+
+	const handleClick = (event) => {
+		setAnchorEl(event.currentTarget);
+	};
+
+	const handleClose = () => {
+		setAnchorEl(null);
+	};
+
+	const handleLogout = () => {
+		dispatch({
+			type: 'LOGOUT',
+		});
+	};
 	return (
 		<div className={classes.root}>
 			<AppBar style={isAuthenticated ? { width: `calc(100% - ${drawerWidth}px)` } : { width: '100%' }} className={classes.appBar}>
@@ -65,10 +86,16 @@ function MenuBar(props) {
 					<div style={{ flexGrow: 1 }}></div>
 					{isAuthenticated ? (
 						<>
-							<IconButton>
-								<i className='fe fe-user'></i>
-							</IconButton>
+							<Button aria-controls='simple-menu' aria-haspopup='true' onClick={handleClick}>
+								<div className={classes.MENU}>
+									<i className='fe fe-user'></i> <i className='fe fe-chevron-down'></i>
+								</div>
+							</Button>
 							<span style={{ color: '#000' }}>Welcome User</span>
+							<Menu id='simple-menu' anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
+								<MenuItem onClick={handleClose}>Profile</MenuItem>
+								<MenuItem onClick={handleLogout}>Logout</MenuItem>
+							</Menu>
 						</>
 					) : (
 						<>

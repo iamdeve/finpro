@@ -4,6 +4,11 @@ import { Bar } from 'react-chartjs-2';
 import { FormControl, InputBase, NativeSelect } from '@material-ui/core';
 import { AuthContext } from '../../context/context';
 import { useHistory } from 'react-router-dom';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 require('../../RoundedBars');
 
 const useStyles = makeStyles((theme) => ({
@@ -41,25 +46,125 @@ function Revenue() {
 	const history = useHistory();
 	const classes = useStyles();
 	const {
-		state: { isAuthenticated },
+		state: { revenueData, data, isAuthenticated },
+		dispatch,
 	} = React.useContext(AuthContext);
 	const [chartValue, setChartValue] = React.useState('year');
 	const handleChange = (event) => {
 		setChartValue(event.target.value);
+		dispatch({ type: 'VIEW_DATA', payload: { type: event.target.value, flag: 'revenueData' } });
 	};
 	React.useEffect(() => {
+		dispatch({ type: 'VIEW_DATA', payload: { type: 'year', flag: 'revenueData' } });
 		if (!isAuthenticated) {
 			history.push('/login');
 		}
-	}, [isAuthenticated, history]);
+	}, [isAuthenticated, history, dispatch]);
+
+	const [open, setOpen] = React.useState(false);
+
+	const handleClickOpen = () => {
+		setOpen(true);
+	};
+
+	const handleClose = () => {
+		setOpen(false);
+	};
+
+	const [revenueForm, setRevenueForm] = React.useState({
+		plan: '',
+		price: '',
+		purchasers: '',
+		type: '',
+		date: '',
+	});
+
+	const handleRevenueChange = (e) => {
+		const { name, value } = e.target;
+		setRevenueForm((prevState) => {
+			return {
+				...prevState,
+				[name]: value,
+			};
+		});
+	};
+
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		dispatch({
+			type: 'Add_REVENUE',
+			payload: revenueForm,
+		});
+		setRevenueForm({});
+		setOpen(false);
+	};
 	return (
 		<div className='container-fluid'>
 			<div className='row'>
 				<div className='col-12 col-xl-12'>
 					<div className='card'>
 						<div className='card-body'>
-							<button className='btn btn-primary'>Add Revenue</button>
+							<button onClick={handleClickOpen} className='btn btn-primary'>
+								Add Revenue
+							</button>
 						</div>
+						<Dialog open={open} onClose={handleClose} aria-labelledby='alert-dialog-title' aria-describedby='alert-dialog-description'>
+							<DialogTitle id='alert-dialog-title'>{'Add Revenue'}</DialogTitle>
+							<form onSubmit={handleSubmit}>
+								<DialogContent>
+									<div className='row g-3'>
+										<div className='col-12 col-md-6 mb-3'>
+											<label htmlFor='plaln' className='form-label'>
+												Plan
+											</label>
+											<input type='text' name='plan' value={revenueForm.plan} onChange={handleRevenueChange} className='form-control' id='plan' placeholder='Plan' required />
+										</div>
+										<div className='col-12 col-md-6 mb-3'>
+											<label htmlFor='Price' className='form-label'>
+												Price
+											</label>
+											<input type='text' name='price' value={revenueForm.price} onChange={handleRevenueChange} className='form-control' id='price' placeholder='Price' required />
+										</div>
+									</div>
+
+									<div className='row g-3'>
+										<div className='col-12 col-md-12 mb-3'>
+											<label htmlFor='purchasers' className='form-label'>
+												Purchasers
+											</label>
+											<input type='text' name='purchasers' value={revenueForm.purchasers} onChange={handleRevenueChange} className='form-control' id='purchasers' placeholder='Purchasers' required />
+										</div>
+									</div>
+									<div className='row g-3'>
+										<div className='col-6 col-md-6 mb-3'>
+											<label htmlFor='type' className='form-label'>
+												Type
+											</label>
+											<select name='type' onChange={handleRevenueChange} className='form-control' id='type' placeholder='Password' required>
+												<option selected value='anually'>
+													Anually
+												</option>
+												<option value='monthly'>Monthly</option>
+											</select>
+										</div>
+										<div className='col-6 col-md-6 mb-3'>
+											<label htmlFor='date' className='form-label'>
+												Date
+											</label>
+											<input type='date' name='date' value={revenueForm.date} onChange={handleRevenueChange} className='form-control' id='date' placeholder='Date' required />
+										</div>
+									</div>
+								</DialogContent>
+								<DialogActions>
+									<button className='btn btn-danger' onClick={handleClose}>
+										Cancel
+									</button>
+									<button type='submit' className='btn btn-primary' autoFocus>
+										Add
+									</button>
+								</DialogActions>
+							</form>
+						</Dialog>
 					</div>
 				</div>
 				<div className='col-12 col-xl-12'>
@@ -69,7 +174,7 @@ function Revenue() {
 							<span className='text-muted mr-3'>View By:</span>
 							<FormControl variant='outlined' className={classes.margin}>
 								<NativeSelect id='demo-customized-select-native' value={chartValue} onChange={handleChange} input={<BootstrapInput />}>
-									<option defaultValue='Year' value='year'>
+									<option defaultValue='year' value='year'>
 										Year
 									</option>
 									<option value='quarter'>Quarter</option>
@@ -80,24 +185,22 @@ function Revenue() {
 						<div className='card-body'>
 							<Bar
 								height={400}
-								data={{
-									labels: ['Oct 1', 'Oct 2', 'Oct 3', 'Oct 4', 'Oct 5', 'Oct 6', 'Oct 7', 'Oct 8', 'Oct 9', 'Oct 10', 'Oct 11', 'Oct 12'],
-									datasets: [
-										{
-											label: '2020',
-											data: [25, 20, 30, 22, 17, 10, 18, 26, 28, 26, 20, 32],
-											backgroundColor: '#0F75FA',
-										},
-										{
-											label: '2019',
-											data: [15, 10, 20, 12, 7, 0, 8, 16, 18, 16, 10, 22],
-											backgroundColor: '#0F75FA',
-											hidden: true,
-											borderWidth: 1,
-										},
-									],
-								}}
+								data={data}
 								options={{
+									legendCallback: function (chart) {
+										alert('he');
+										var text = [];
+										text.push('<ul class="' + chart.id + '-legend">');
+										for (var i = 0; i < chart.data.datasets.length; i++) {
+											text.push('<li><span style="background-color:' + chart.data.datasets[i].backgroundColor + '"></span>');
+											if (chart.data.datasets[i].label) {
+												text.push(chart.data.datasets[i].label);
+											}
+											text.push('</li>');
+										}
+										text.push('</ul>');
+										return text.join('');
+									},
 									tooltips: {
 										callbacks: {
 											title: function (tooltipItem, data) {
@@ -161,8 +264,8 @@ function Revenue() {
 							<h4 className='card-header-title'>Revenue Inputs</h4>
 						</div>
 						<div className='card-body'>
-							<div class='table-responsive'>
-								<table class='table table-sm table-hover table-nowrap mb-0'>
+							<div className='table-responsive'>
+								<table className='table table-sm table-hover table-nowrap mb-0'>
 									<thead>
 										<tr>
 											<th scope='col'>Play Name</th>
@@ -173,39 +276,19 @@ function Revenue() {
 										</tr>
 									</thead>
 									<tbody>
-										<tr>
-											<td>Silver Plan</td>
-											<td>$200</td>
-											<td>20</td>
-											<td>Monthly</td>
-											<td>
-												<span>
-													<i className='fe fe-edit'></i> <i className='fe fe-x-square'></i>
-												</span>
-											</td>
-										</tr>
-										<tr>
-											<td>Gold Plan</td>
-											<td>$800</td>
-											<td>30</td>
-											<td>Annually</td>
-											<td>
-												<span>
-													<i className='fe fe-edit'></i> <i className='fe fe-x-square'></i>
-												</span>
-											</td>
-										</tr>
-										<tr>
-											<td>Platinum Plan</td>
-											<td>$1000</td>
-											<td>40</td>
-											<td>Monthly</td>
-											<td>
-												<span>
-													<i className='fe fe-edit'></i> <i className='fe fe-x-square'></i>
-												</span>
-											</td>
-										</tr>
+										{revenueData.map((rev, id) => (
+											<tr key={id}>
+												<td>{rev.plan}</td>
+												<td>${rev.price}</td>
+												<td>{rev.purchasers}</td>
+												<td>{rev.type}</td>
+												<td>
+													<span>
+														<i className='fe fe-edit'></i> <i className='fe fe-x-square'></i>
+													</span>
+												</td>
+											</tr>
+										))}
 									</tbody>
 								</table>
 							</div>
@@ -218,8 +301,8 @@ function Revenue() {
 							<h4 className='card-header-title'>Revenue Costs</h4>
 						</div>
 						<div className='card-body'>
-							<div class='table-responsive'>
-								<table class='table table-sm table-hover table-nowrap mb-0'>
+							<div className='table-responsive'>
+								<table className='table table-sm table-hover table-nowrap mb-0'>
 									<thead>
 										<tr>
 											<th scope='col'>Revenue Drivers</th>
