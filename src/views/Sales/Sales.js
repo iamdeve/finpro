@@ -97,6 +97,7 @@ function Sales() {
 		});
 		setSalesForm({});
 		setOpen(false);
+		dispatch({ type: 'VIEW_DATA', payload: { type: 'year', flag: 'salesData' } });
 	};
 
 	return (
@@ -116,7 +117,7 @@ function Sales() {
 									<div className='row g-3'>
 										<div className='col-12 col-md-6 mb-3'>
 											<label htmlFor='hire' className='form-label'>
-												Plan
+												Hire
 											</label>
 											<input type='text' name='hire' value={salesForm.hire} onChange={handleSalesChange} className='form-control' id='hire' placeholder='Hire' required />
 										</div>

@@ -2,8 +2,13 @@ import React from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { Bar } from 'react-chartjs-2';
 import { FormControl, InputBase, NativeSelect } from '@material-ui/core';
-import { AuthContext } from '../../context/context';
+import { AuthContext, getMonth } from '../../context/context';
 import { useHistory } from 'react-router-dom';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 require('../../RoundedBars');
 
 const useStyles = makeStyles((theme) => ({
@@ -40,17 +45,59 @@ function GandA() {
 	const history = useHistory();
 	const classes = useStyles();
 	const {
-		state: { isAuthenticated },
+		state: { salesData, data, isAuthenticated },
+		dispatch,
 	} = React.useContext(AuthContext);
 	const [chartValue, setChartValue] = React.useState('year');
 	const handleChange = (event) => {
 		setChartValue(event.target.value);
+		dispatch({ type: 'VIEW_DATA', payload: { type: event.target.value, flag: 'salesData' } });
 	};
 	React.useEffect(() => {
+		dispatch({ type: 'VIEW_DATA', payload: { type: 'year', flag: 'salesData' } });
 		if (!isAuthenticated) {
 			history.push('/login');
 		}
-	}, [isAuthenticated, history]);
+	}, [isAuthenticated, history, dispatch]);
+
+	const [open, setOpen] = React.useState(false);
+
+	const handleClickOpen = () => {
+		setOpen(true);
+	};
+
+	const handleClose = () => {
+		setOpen(false);
+	};
+
+	const [salesForm, setSalesForm] = React.useState({
+		hire: '',
+		startDate: '',
+		salery: '',
+		taxes: '',
+		commissions: '',
+	});
+
+	const handleSalesChange = (e) => {
+		const { name, value } = e.target;
+		setSalesForm((prevState) => {
+			return {
+				...prevState,
+				[name]: value,
+			};
+		});
+	};
+
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		dispatch({
+			type: 'Add_SALES',
+			payload: salesForm,
+		});
+		setSalesForm({});
+		setOpen(false);
+		dispatch({ type: 'VIEW_DATA', payload: { type: 'year', flag: 'salesData' } });
+	};
 
 	return (
 		<div className='container-fluid'>
@@ -58,9 +105,63 @@ function GandA() {
 				<div className='col-12 col-xl-12'>
 					<div className='card'>
 						<div className='card-body'>
-							<button className='btn btn-primary'>Add G&A</button>
+							<button onClick={handleClickOpen} className='btn btn-primary'>
+								Add G&A
+							</button>
 						</div>
 					</div>
+					<Dialog open={open} onClose={handleClose} aria-labelledby='alert-dialog-title' aria-describedby='alert-dialog-description'>
+						<DialogTitle id='alert-dialog-title'>{'Add G&A'}</DialogTitle>
+						<form onSubmit={handleSubmit}>
+							<DialogContent>
+								<div className='row g-3'>
+									<div className='col-12 col-md-6 mb-3'>
+										<label htmlFor='hire' className='form-label'>
+											Hire
+										</label>
+										<input type='text' name='hire' value={salesForm.hire} onChange={handleSalesChange} className='form-control' id='hire' placeholder='Hire' required />
+									</div>
+									<div className='col-6 col-md-6 mb-3'>
+										<label htmlFor='startDate' className='form-label'>
+											Start Date
+										</label>
+										<input type='date' name='startDate' value={salesForm.startDate} onChange={handleSalesChange} className='form-control' id='startDate' placeholder='Start Date' required />
+									</div>
+								</div>
+
+								<div className='row g-3'>
+									<div className='col-6 col-md-6 mb-3'>
+										<label htmlFor='salery' className='form-label'>
+											Salery
+										</label>
+										<input type='text' name='salery' value={salesForm.salery} onChange={handleSalesChange} className='form-control' id='salery' placeholder='Salery' required />
+									</div>
+									<div className='col-6 col-md-6 mb-3'>
+										<label htmlFor='taxes' className='form-label'>
+											Taxes
+										</label>
+										<input type='text' name='taxes' value={salesForm.taxes} onChange={handleSalesChange} className='form-control' id='taxes' placeholder='Taxes' required />
+									</div>
+								</div>
+								<div className='row g-3'>
+									<div className='col-12 col-md-12 mb-3'>
+										<label htmlFor='commission' className='form-label'>
+											Commissions
+										</label>
+										<input type='text' name='commissions' value={salesForm.commissions} onChange={handleSalesChange} className='form-control' id='commission' placeholder='Commission' required />
+									</div>
+								</div>
+							</DialogContent>
+							<DialogActions>
+								<button className='btn btn-danger' onClick={handleClose}>
+									Cancel
+								</button>
+								<button type='submit' className='btn btn-primary' autoFocus>
+									Add
+								</button>
+							</DialogActions>
+						</form>
+					</Dialog>
 				</div>
 				<div className='col-12 col-xl-12'>
 					<div className='card'>
@@ -80,23 +181,7 @@ function GandA() {
 						<div className='card-body'>
 							<Bar
 								height={400}
-								data={{
-									labels: ['Oct 1', 'Oct 2', 'Oct 3', 'Oct 4', 'Oct 5', 'Oct 6', 'Oct 7', 'Oct 8', 'Oct 9', 'Oct 10', 'Oct 11', 'Oct 12'],
-									datasets: [
-										{
-											label: '2020',
-											data: [25, 20, 30, 22, 17, 10, 18, 26, 28, 26, 20, 32],
-											backgroundColor: '#0F75FA',
-										},
-										{
-											label: '2019',
-											data: [15, 10, 20, 12, 7, 0, 8, 16, 18, 16, 10, 22],
-											backgroundColor: '#0F75FA',
-											hidden: true,
-											borderWidth: 1,
-										},
-									],
-								}}
+								data={data}
 								options={{
 									tooltips: {
 										callbacks: {
@@ -176,18 +261,20 @@ function GandA() {
 												</tr>
 											</thead>
 											<tbody>
-												<tr>
-													<td>Jorda-Lee Jennings</td>
-													<td>Mar 2021</td>
-													<td>$156,000</td>
-													<td>CA-15%</td>
-													<td>$5678.00</td>
-													<td>
-														<span>
-															<i className='fe fe-edit'></i> <i className='fe fe-x-square'></i>
-														</span>
-													</td>
-												</tr>
+												{salesData.map((sd, id) => (
+													<tr key={id}>
+														<td>{sd.hire}</td>
+														<td>{`${getMonth(new Date(sd.startDate).getMonth() + 1)} ${new Date(sd.startDate).getFullYear()}`}</td>
+														<td>${sd.salery}</td>
+														<td>{sd.taxes}%</td>
+														<td>${sd.commissions}</td>
+														<td>
+															<span>
+																<i className='fe fe-edit'></i> <i className='fe fe-x-square'></i>
+															</span>
+														</td>
+													</tr>
+												))}
 											</tbody>
 										</table>
 									</div>
