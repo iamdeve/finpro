@@ -21,7 +21,7 @@ app.use('/test', AuthMiddleWare.Validate, (req, res, next) => {
 	});
 });
 
-app.use('/test2', AuthMiddleWare.Validate, (req, res, next) => {
+app.use('/test2', (req, res, next) => {
 	res.status(200).json({
 		message: 'test',
 	});
