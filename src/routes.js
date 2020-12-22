@@ -8,6 +8,7 @@ import GandA from './views/GandA/GandA';
 import Reports from './views/Reports/Reports';
 import Login from './views/Auth/Login/Login';
 import SignUp from './views/Auth/SignUp/SignUp';
+import Checkout from './views/Checkout/Checkout';
 function Routes() {
 	return (
 		<Switch>
@@ -20,6 +21,7 @@ function Routes() {
 			<Route exact path='/reports' component={Reports} />
 			<Route exact path='/login' component={Login} />
 			<Route exact path='/signup' component={SignUp} />
+			<Route exact path='/checkout' component={Checkout} />
 		</Switch>
 	);
 }

@@ -150,6 +150,11 @@ function MenuBar(props) {
 								<i className='fe fe-file'></i> Reports
 							</NavLink>
 						</li>
+						<li className='nav-item'>
+							<NavLink className='nav-link' activeClassName='active' to='/checkout'>
+								<i className='fe fe-file'></i> Checkout
+							</NavLink>
+						</li>
 					</ul>
 				</Drawer>
 			)}
