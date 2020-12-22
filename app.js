@@ -15,6 +15,9 @@ const route = '/api';
 const authRoute = require('./routes/auth');
 app.use(`${route}/auth`, authRoute);
 
+const stripePyament = require('./routes/stripe-subscription');
+app.use(`${route}`, stripePyament);
+
 app.use('/test', AuthMiddleWare.Validate, (req, res, next) => {
 	res.status(200).json({
 		message: 'test',
