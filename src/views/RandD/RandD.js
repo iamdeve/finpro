@@ -97,7 +97,7 @@ function RandD() {
 		});
 		setSalesForm({});
 		setOpen(false);
-		dispatch({ type: 'VIEW_DATA', payload: { type: 'year', flag: 'salesData' } });
+		dispatch({ type: 'VIEW_DATA', payload: { type: chartValue, flag: 'salesData' } });
 	};
 
 	return (

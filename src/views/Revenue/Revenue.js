@@ -93,11 +93,13 @@ function Revenue() {
 		e.preventDefault();
 		dispatch({
 			type: 'Add_REVENUE',
-			payload: revenueForm,
+			payload: { ...revenueForm },
 		});
 		setRevenueForm({});
 		setOpen(false);
+		dispatch({ type: 'VIEW_DATA', payload: { type: chartValue, flag: 'revenueData' } });
 	};
+	console.log(revenueData);
 	return (
 		<div className='container-fluid'>
 			<div className='row'>

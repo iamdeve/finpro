@@ -107,14 +107,16 @@ export const reducer = (state, action) => {
 				token: null,
 			};
 		case 'Add_REVENUE':
+			state.revenueData.push(action.payload);
 			return {
 				...state,
-				revenueData: state.revenueData.push(action.payload),
+				revenueData: state.revenueData,
 			};
 		case 'Add_SALES':
+			state.salesData.push(action.payload)
 			return {
 				...state,
-				revenueData: state.salesData.push(action.payload),
+				revenueData: state.salesData,
 			};
 		case 'VIEW_DATA':
 			let updatedData = setData(action.payload.type, action.payload.flag, state);
@@ -164,7 +166,7 @@ function setData(type, flag, state) {
 					data: [...qprices],
 				};
 				// console.log(quarterData);
-			}else if(flag === 'salesData'){
+			} else if (flag === 'salesData') {
 				let qdata = [...state[flag]];
 				let qprices = getQuarter(qdata, 'startDate', 'salery');
 				quarterData = { ...state.quarterData };
@@ -186,7 +188,7 @@ function setData(type, flag, state) {
 					...monthData.datasets[0],
 					data: [...mprices],
 				};
-			}else if(flag ==='salesData'){
+			} else if (flag === 'salesData') {
 				let mdata = [...state[flag]];
 				let mlabels = mdata.map((r) => getMonth(new Date(r.startDate).getMonth() + 1));
 				let msalery = mdata.map((r) => r.salery.split(',').join(''));
