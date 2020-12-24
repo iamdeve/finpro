@@ -1,6 +1,9 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import axios from '../../../context/axios';
+import { Link } from 'react-router-dom';
+import LOGO from '../../../assets/logo.png';
+import BGImgs from '../../../assets/sign-in-cover.jpg';
 const useStyles = makeStyles((theme) => ({
 	root: {
 		display: 'flex',
@@ -13,12 +16,11 @@ function SignUp() {
 
 	const [alertClass, setAlertClass] = React.useState('');
 	const [msg, setMsg] = React.useState('');
+
+	const [passwordType, setPasswordType] = React.useState('password');
 	const [err, setErr] = React.useState('');
 	const [signupForm, setSignupForm] = React.useState({
-		firstName: '',
-		lastName: '',
 		email: '',
-		password: '',
 		cpassword: '',
 	});
 
@@ -35,23 +37,14 @@ function SignUp() {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-
-		if (signupForm.password !== signupForm.cpassword) {
-			setAlertClass('show');
-			setErr('Passowrd should match with Confirm Password');
-			return;
-		}
 		try {
 			let signup = await axios.post('/auth/signup', signupForm);
 			if (signup.status === 200 || signup.status === 201) {
 				setErr('');
 				setAlertClass('show');
 				setSignupForm({
-					firstName: '',
-					lastName: '',
 					email: '',
 					password: '',
-					cpassword: '',
 				});
 				setMsg('Successfully Registered');
 			}
@@ -75,13 +68,24 @@ function SignUp() {
 		setMsg('');
 	};
 
+	const handlePwdType = () => {
+		if (passwordType === 'password') {
+			setPasswordType('text');
+		} else {
+			setPasswordType('password');
+		}
+	};
+
 	return (
-		<div className={classes.root}>
-			<div className='card'>
-				<div className='card-body'>
-					<div className='card-title'>
-						<h2>Create Account</h2>
+		<div className='container-fluid'>
+			<div className='row align-items-center justify-content-center'>
+				<div className='col-12 col-md-5 col-lg-6 col-xl-4 px-lg-6 my-5'>
+					<div className='Logo text-center'>
+						<Link to='/'>
+							<img src={LOGO} alt='logo' />
+						</Link>
 					</div>
+					<h2 className='display-4 text-center mb-3'>Create a new Account</h2>
 					{msg && (
 						<div className={`alert alert-success alert-dismissible fade ${alertClass}`} role='alert'>
 							<strong>{msg}</strong>
@@ -98,51 +102,38 @@ function SignUp() {
 							</button>
 						</div>
 					)}
+
 					<form onSubmit={handleSubmit}>
-						<div className='row g-3'>
-							<div className='col-12 col-md-6 mb-3'>
-								<label htmlFor='firstName' className='form-label'>
-									First name
-								</label>
-								<input type='text' name='firstName' value={signupForm.firstName} onChange={handleSignUp} className='form-control' id='firstName' placeholder='First name' required />
-							</div>
-							<div className='col-12 col-md-6 mb-3'>
-								<label htmlFor='lastName' className='form-label'>
-									Last name
-								</label>
-								<input type='text' name='lastName' value={signupForm.lastName} onChange={handleSignUp} className='form-control' id='lastName' placeholder='Last name' required />
+						<div className='form-group'>
+							<label className='form-label'>Email Address</label>
+
+							<input type='email' name='email' value={signupForm.email} onChange={handleSignUp} className='form-control' placeholder='name@address.com' />
+						</div>
+
+						<div className='form-group'>
+							<label className='form-label'>Password</label>
+
+							<div className='input-group input-group-merge'>
+								<input className='form-control' name='password' value={signupForm.password} onChange={handleSignUp} type={passwordType} placeholder='Enter your password' />
+
+								<span onClick={handlePwdType} className='input-group-text'>
+									<i className='fe fe-eye'></i>
+								</span>
 							</div>
 						</div>
 
-						<div className='row g-3'>
-							<div className='col-12 col-md-12 mb-3'>
-								<label htmlFor='email' className='form-label'>
-									Email
-								</label>
-								<input type='email' name='email' value={signupForm.email} onChange={handleSignUp} className='form-control' id='email' placeholder='Email' required />
-							</div>
-						</div>
-						<div className='row g-3'>
-							<div className='col-12 col-md-12 mb-3'>
-								<label htmlFor='password' className='form-label'>
-									Password
-								</label>
-								<input type='password' name='password' value={signupForm.password} onChange={handleSignUp} className='form-control' id='password' placeholder='Password' required />
-							</div>
-						</div>
-						<div className='row g-3'>
-							<div className='col-12 col-md-12 mb-3'>
-								<label htmlFor='cpassword' className='form-label'>
-									Confirm Password
-								</label>
-								<input type='password' name='cpassword' value={signupForm.cpassword} onChange={handleSignUp} className='form-control' id='cpassword' placeholder='Confirm Password' required />
-							</div>
-						</div>
+						<button className='btn btn-lg btn-block btn-custom mb-3'>Sign up for 30-days free trial</button>
 
-						<button className='btn btn-primary' type='submit'>
-							Sign Up
-						</button>
+						<div className='text-center'>
+							<small className='text-muted text-center'>
+								Already have an account? <Link to='/login'>Log in</Link>.
+							</small>
+						</div>
 					</form>
+				</div>
+
+				<div className='col-12 col-md-7 col-lg-6 col-xl-8 d-none d-lg-block'>
+					<div className='bg-cover vh-100 mt-n1 mr-n3' style={{ backgroundImage: `url(${BGImgs})` }}></div>
 				</div>
 			</div>
 		</div>

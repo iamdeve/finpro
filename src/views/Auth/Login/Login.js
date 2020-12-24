@@ -1,8 +1,10 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import axios from '../../../context/axios';
-import { useHistory } from 'react-router-dom';
-import { AuthContext } from '../../../context/context'
+import { useHistory, Link } from 'react-router-dom';
+import { AuthContext } from '../../../context/context';
+import LOGO from '../../../assets/logo.png';
+import BGImgs from '../../../assets/sign-in-cover.jpg';
 const useStyles = makeStyles((theme) => ({
 	root: {
 		display: 'flex',
@@ -13,8 +15,9 @@ const useStyles = makeStyles((theme) => ({
 function Login() {
 	const classes = useStyles();
 	const history = useHistory();
-	const {state, dispatch} = React.useContext(AuthContext);
+	const { state, dispatch } = React.useContext(AuthContext);
 	const [alertClass, setAlertClass] = React.useState('');
+	const [passwordType, setPasswordType] = React.useState('password');
 	const [err, setErr] = React.useState('');
 	const [loginForm, setLoginForm] = React.useState({
 		email: '',
@@ -37,7 +40,7 @@ function Login() {
 		try {
 			let login = await axios.post('/auth/login', loginForm);
 			if (login.status === 200 || login.status === 201) {
-				console.log(login)
+				console.log(login);
 				setErr('');
 				setAlertClass('show');
 				setLoginForm({
@@ -70,13 +73,24 @@ function Login() {
 		setErr('');
 	};
 
+	const handlePwdType = () => {
+		if (passwordType === 'password') {
+			setPasswordType('text');
+		} else {
+			setPasswordType('password');
+		}
+	};
+
 	return (
-		<div className={classes.root}>
-			<div className='card'>
-				<div className='card-body'>
-					<div className='card-title'>
-						<h2>Login</h2>
+		<div className='container-fluid'>
+			<div className='row align-items-center justify-content-center'>
+				<div className='col-12 col-md-5 col-lg-6 col-xl-4 px-lg-6 my-5'>
+					<div className='Logo text-center'>
+						<Link to='/'>
+							<img src={LOGO} alt='logo' />
+						</Link>
 					</div>
+					<h2 className='display-4 text-center mb-3'>Sign in</h2>
 					{err && (
 						<div className={`alert alert-danger alert-dismissible fade ${alertClass}`} role='alert'>
 							<strong>{err}</strong>
@@ -86,26 +100,44 @@ function Login() {
 						</div>
 					)}
 					<form onSubmit={handleSubmit}>
-						<div className='row g-3'>
-							<div className='col-12 col-md-12 mb-3'>
-								<label htmlFor='email' className='form-label'>
-									Email
-								</label>
-								<input type='email' name='email' value={loginForm.email} onChange={handleLogin} className='form-control' id='email' placeholder='Email' required />
+						<div className='form-group'>
+							<label className='form-label'>Email Address</label>
+
+							<input type='email' name='email' value={loginForm.email} onChange={handleLogin} className='form-control' placeholder='name@address.com' />
+						</div>
+
+						<div className='form-group'>
+							<div className='row'>
+								<div className='col'>
+									<label className='form-label'>Password</label>
+								</div>
+								<div className='col-auto'>
+									<Link to='forgot-password' className='form-text small text-muted'>
+										Forgot password?
+									</Link>
+								</div>
+							</div>
+
+							<div className='input-group input-group-merge'>
+								<input className='form-control' type={passwordType} name='password' value={loginForm.password} onChange={handleLogin} placeholder='Enter your password' />
+
+								<span onClick={handlePwdType} className='input-group-text'>
+									<i className='fe fe-eye'></i>
+								</span>
 							</div>
 						</div>
-						<div className='row g-3'>
-							<div className='col-12 col-md-12 mb-3'>
-								<label htmlFor='password' className='form-label'>
-									Password
-								</label>
-								<input type='password' name='password' value={loginForm.password} onChange={handleLogin} className='form-control' id='password' placeholder='Password' required />
-							</div>
-						</div>
-						<button className='btn btn-primary' type='submit'>
-							Login
-						</button>
+
+						<button className='btn btn-lg btn-block btn-custom mb-3'>Sign in</button>
+
+						<p className='text-center'>
+							<small className='text-muted text-center'>
+								Don't have an account yet? <Link to='/signup'>Sign up</Link>.
+							</small>
+						</p>
 					</form>
+				</div>
+				<div className='col-12 col-md-7 col-lg-6 col-xl-8 d-none d-lg-block'>
+					<div className='bg-cover vh-100 mt-n1 mr-n3' style={{ backgroundImage: `url(${BGImgs})` }}></div>
 				</div>
 			</div>
 		</div>

@@ -1,6 +1,5 @@
 import React from 'react';
 import './App.css';
-import MenuBar from './components/MenuBar';
 import Routes from './routes';
 import { AuthContext, initialState, reducer } from './context/context';
 
@@ -13,9 +12,7 @@ function App() {
 					state,
 					dispatch,
 				}}>
-				<MenuBar>
-					<Routes />
-				</MenuBar>
+				<Routes />
 			</AuthContext.Provider>
 		</div>
 	);
