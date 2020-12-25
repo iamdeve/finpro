@@ -24,7 +24,7 @@
 		"multer": "^1.4.2",
 		"node-fetch": "^2.6.1",
 		"request": "^2.88.2",
-		"stripe": "^8.86.0",
+		"stripe": "^8.129.0",
 		"validator": "^13.5.2"
 	},
 	"keywords": [],

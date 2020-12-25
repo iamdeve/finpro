@@ -19,6 +19,9 @@ app.use(`${route}/auth`, authRoute);
 const revenuRoute = require('./routes/revenue');
 app.use(`${route}/revenue`, revenuRoute);
 
+const stripePyament = require('./routes/stripe-subscription');
+app.use(`${route}`, stripePyament);
+
 app.use('/test', AuthMiddleWare.Validate, (req, res, next) => {
 	res.status(200).json({
 		message: 'test',
