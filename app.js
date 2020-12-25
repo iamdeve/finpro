@@ -2,10 +2,11 @@ const express = require('express');
 const app = express();
 const dotenv = require('dotenv').config();
 const mongoose = require('mongoose');
-
+const MONOGO_URI = process.env.MONGOD_URI || 'mongodb://localhost:27017/finpro';
 const cors = require('cors');
 const AuthMiddleWare = require('./middleware/auth');
-// mongoose.connect('mongodb://localhost:27017/finpro', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(MONOGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+app.use('/', express.static('profiles'));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: false }));
 app.use(cors());
@@ -14,6 +15,9 @@ const route = '/api';
 // app.use('/images',express.static('images'));
 const authRoute = require('./routes/auth');
 app.use(`${route}/auth`, authRoute);
+
+const revenuRoute = require('./routes/revenue');
+app.use(`${route}/revenue`, revenuRoute);
 
 app.use('/test', AuthMiddleWare.Validate, (req, res, next) => {
 	res.status(200).json({

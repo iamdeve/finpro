@@ -21,8 +21,6 @@ module.exports = (req, res, next) => {
 	}
 };
 
-const https = require('https');
-
 module.exports.Validate = function (req, res, next) {
 	var token = req.headers['authorization'];
 	let url = `https://cognito
@@ -50,23 +48,28 @@ module.exports.Validate = function (req, res, next) {
 				var decodedJwt = jwt.decode(token, { complete: true });
 				if (!decodedJwt) {
 					console.log('Not a valid JWT token');
-					res.status(401);
-					return res.send('Invalid token');
+					return res.status(401).json({
+						error:{message: 'Invalid token',}
+					});
 				}
 				var kid = decodedJwt.header.kid;
 				var pem = pems[kid];
 				if (!pem) {
 					console.log('Invalid token');
-					res.status(401);
-					return res.send('Invalid token');
+					return res.status(401).json({
+						error:{message: 'Invalid token',}
+					});
 				}
 				jwt.verify(token, pem, function (err, payload) {
 					if (err) {
 						console.log('Invalid Token.');
 						res.status(401);
-						return res.send('Invalid tokern');
+						return res.status(401).json({
+							error:{message: 'Invalid token',}
+						});
 					} else {
 						console.log('Valid Token.');
+						req.user = decodedJwt;
 						return next();
 					}
 				});

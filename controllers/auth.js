@@ -15,8 +15,7 @@ const poolData = {
 const pool_region = process.env.pool_region;
 const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
-module.exports.signupWithCognito = (req, res, next) => {
-
+module.exports.signupWithCognito = async (req, res, next) => {
 	const email = req.body.email;
 	const pass = req.body.password;
 	const firstName = req.body.firstName;
@@ -26,7 +25,7 @@ module.exports.signupWithCognito = (req, res, next) => {
 	attributeList.push(new AmazonCognitoIdentity.CognitoUserAttribute({ Name: 'email', Value: email }));
 	attributeList.push(new AmazonCognitoIdentity.CognitoUserAttribute({ Name: 'name', Value: firstName }));
 	attributeList.push(new AmazonCognitoIdentity.CognitoUserAttribute({ Name: 'family_name', Value: lastName }));
-	userPool.signUp(email, pass, attributeList, null, function (err, result) {
+	userPool.signUp(email, pass, attributeList, null, async function (err, result) {
 		if (err) {
 			console.log(err);
 			res.status(500).json({
@@ -35,10 +34,22 @@ module.exports.signupWithCognito = (req, res, next) => {
 		}
 		var cognitoUser = result.user;
 		console.log(cognitoUser);
-		res.status(201).json({
-			message: 'sign up successful',
-			token: cognitoUser,
+		let user = new Auth({
+			_id: mongoose.Types.ObjectId(),
+			email: email,
+			cogUserId: cognitoUser.pool.clientId,
 		});
+		try {
+			await user.save();
+			res.status(201).json({
+				message: 'sign up successful',
+				token: cognitoUser,
+			});
+		} catch (err) {
+			res.status(500).json({
+				error: err,
+			});
+		}
 	});
 };
 
@@ -175,6 +186,55 @@ module.exports.loginWithEmail = (req, res, next) => {
 		})
 		.catch((err) => {
 			res.status(502).json({
+				error: err,
+			});
+		});
+};
+
+module.exports.userSetting = (req, res, next) => {
+	if (Object.keys(req.body).length === 0) {
+		return res.status(400).json({ error: 'Payload must not be empty' });
+	}
+	const userData = req.body;
+	const cogUserId = req.user.payload.client_id;
+	Auth.findOneAndUpdate({ cogUserId: cogUserId }, userData)
+		.exec()
+		.then(async (result) => {
+			res.status(200).json({
+				message: 'User updated successfully',
+			});
+		})
+		.catch((err) => {
+			res.status(500).json({
+				error: err,
+			});
+			s;
+		});
+};
+
+module.exports.profilePicture = (req, res, next) => {
+	let image;
+	req.file != null ? (image = req.file.path) : null;
+	const cogUserId = req.user.payload.client_id;
+	Auth.findOne({ cogUserId: cogUserId })
+		.exec()
+		.then(async (result) => {
+			result.profile = image;
+			result
+				.save()
+				.then(() => {
+					res.status(200).json({
+						message: 'Profile Changes successfully',
+					});
+				})
+				.catch((err) => {
+					res.status(500).json({
+						error: err,
+					});
+				});
+		})
+		.catch((err) => {
+			res.status(500).json({
 				error: err,
 			});
 		});

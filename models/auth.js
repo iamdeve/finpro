@@ -4,7 +4,10 @@ const authSchema = new mongoose.Schema({
 		type: mongoose.Schema.Types.ObjectId,
 		required: true,
 	},
-
+	cogUserId: {
+		type: String,
+		required: true,
+	},
 	firstName: {
 		type: String,
 	},
@@ -15,13 +18,15 @@ const authSchema = new mongoose.Schema({
 
 	email: {
 		type: String,
-		required: true,
-		unique: true,
 	},
-
 	password: {
 		type: String,
-		required: true,
+	},
+	phone: {
+		type: String,
+	},
+	profile: {
+		type: String,
 	},
 });
 
