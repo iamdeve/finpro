@@ -126,3 +126,32 @@ li.nav-item > a.active{
 .list-checks{
   color: green;
 }
+
+.chart-handle-grup{
+  display: flex;
+}
+.chart-dropdown{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid;
+  padding: 0 .5rem;
+  border-radius: 5px;
+  background: #F8F9FA;
+  margin-right: .5rem;
+}
+
+.chart-dropdown .MuiNativeSelect-outlined.MuiNativeSelect-outlined{
+  padding-right: 10px;
+}
+
+.btn-custom-group{
+  background: #F8F9FA;
+  border: 1px solid #000;
+  color: #000;
+}
+
+.btn-custom-group:hover, .btn-custom-group:active, .btn-custom-group:focus{
+  background: #5AC2DE !important;
+  border: 1px solid #000;
+}

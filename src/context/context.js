@@ -10,7 +10,8 @@ export const initialState = {
 			{
 				label: 'Year',
 				data: [25, 20, 30, 22, 17, 10, 18, 26, 28, 26, 20, 32],
-				backgroundColor: '#0F75FA',
+				// backgroundColor: '#0F75FA',
+				backgroundColor: 'red',
 			},
 		],
 	},
@@ -43,7 +44,9 @@ export const initialState = {
 			{
 				label: 'Year',
 				data: [25, 20, 30, 22, 17, 10, 18, 26, 28, 26, 20, 32],
-				backgroundColor: '#0F75FA',
+				// backgroundColor: '#0F75FA',
+				backgroundColor: 'red',
+				hoverBackgroundColor: 'rgba(232,105,90,0.8)',
 			},
 		],
 	},
@@ -113,7 +116,7 @@ export const reducer = (state, action) => {
 				revenueData: state.revenueData,
 			};
 		case 'Add_SALES':
-			state.salesData.push(action.payload)
+			state.salesData.push(action.payload);
 			return {
 				...state,
 				revenueData: state.salesData,

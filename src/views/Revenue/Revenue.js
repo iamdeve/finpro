@@ -8,6 +8,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { ButtonGroup, Button, Dropdown, DropdownButton } from 'react-bootstrap';
 
 require('../../RoundedBars');
 
@@ -27,8 +28,8 @@ const BootstrapInput = withStyles((theme) => ({
 	input: {
 		borderRadius: 4,
 		position: 'relative',
-		backgroundColor: theme.palette.background.paper,
-		border: '1px solid #ced4da',
+		backgroundColor: '#f8f9fa',
+		// border: '1px solid #ced4da',
 		fontSize: 16,
 		padding: '10px 26px 10px 12px',
 		transition: theme.transitions.create(['border-color', 'box-shadow']),
@@ -105,104 +106,33 @@ function Revenue() {
 			<div className='row'>
 				<div className='col-12 col-xl-12'>
 					<div className='card'>
-						<div className='card-body'>
-							<button onClick={handleClickOpen} className='btn btn-primary'>
-								Add Revenue
-							</button>
-						</div>
-						<Dialog open={open} onClose={handleClose} aria-labelledby='alert-dialog-title' aria-describedby='alert-dialog-description'>
-							<DialogTitle id='alert-dialog-title'>{'Add Revenue'}</DialogTitle>
-							<form onSubmit={handleSubmit}>
-								<DialogContent>
-									<div className='row g-3'>
-										<div className='col-12 col-md-6 mb-3'>
-											<label htmlFor='plaln' className='form-label'>
-												Plan
-											</label>
-											<input type='text' name='plan' value={revenueForm.plan} onChange={handleRevenueChange} className='form-control' id='plan' placeholder='Plan' required />
-										</div>
-										<div className='col-12 col-md-6 mb-3'>
-											<label htmlFor='Price' className='form-label'>
-												Price
-											</label>
-											<input type='text' name='price' value={revenueForm.price} onChange={handleRevenueChange} className='form-control' id='price' placeholder='Price' required />
-										</div>
-									</div>
-
-									<div className='row g-3'>
-										<div className='col-12 col-md-12 mb-3'>
-											<label htmlFor='purchasers' className='form-label'>
-												Purchasers
-											</label>
-											<input type='text' name='purchasers' value={revenueForm.purchasers} onChange={handleRevenueChange} className='form-control' id='purchasers' placeholder='Purchasers' required />
-										</div>
-									</div>
-									<div className='row g-3'>
-										<div className='col-6 col-md-6 mb-3'>
-											<label htmlFor='type' className='form-label'>
-												Type
-											</label>
-											<select name='type' onChange={handleRevenueChange} className='form-control' id='type' placeholder='Password' required>
-												<option selected value='anually'>
-													Anually
-												</option>
-												<option value='monthly'>Monthly</option>
-											</select>
-										</div>
-										<div className='col-6 col-md-6 mb-3'>
-											<label htmlFor='date' className='form-label'>
-												Date
-											</label>
-											<input type='date' name='date' value={revenueForm.date} onChange={handleRevenueChange} className='form-control' id='date' placeholder='Date' required />
-										</div>
-									</div>
-								</DialogContent>
-								<DialogActions>
-									<button className='btn btn-danger' onClick={handleClose}>
-										Cancel
-									</button>
-									<button type='submit' className='btn btn-primary' autoFocus>
-										Add
-									</button>
-								</DialogActions>
-							</form>
-						</Dialog>
-					</div>
-				</div>
-				<div className='col-12 col-xl-12'>
-					<div className='card'>
 						<div className='card-header'>
 							<h4 className='card-header-title'>Revenue</h4>
-							<span className='text-muted mr-3'>View By:</span>
-							<FormControl variant='outlined' className={classes.margin}>
-								<NativeSelect id='demo-customized-select-native' value={chartValue} onChange={handleChange} input={<BootstrapInput />}>
-									<option defaultValue='year' value='year'>
-										Year
-									</option>
-									<option value='quarter'>Quarter</option>
-									<option value='month'>Month</option>
-								</NativeSelect>
-							</FormControl>
+							<div className='chart-handle-grup'>
+								<div className='chart-dropdown'>
+									<span className='mr-3'>View By :</span>
+									<FormControl variant='outlined' className={classes.margin}>
+										<NativeSelect id='demo-customized-select-native' value={chartValue} onChange={handleChange} input={<BootstrapInput />}>
+											<option defaultValue='year' value='year'>
+												Year
+											</option>
+											<option value='quarter'>Quarter</option>
+											<option value='month'>Month</option>
+										</NativeSelect>
+									</FormControl>
+								</div>
+								<ButtonGroup aria-label='Basic example'>
+									<Button className='btn-custom-group'>Export</Button>
+									<Button className='btn-custom-group'>CSV</Button>
+									<Button className='btn-custom-group'>PDF</Button>
+								</ButtonGroup>
+							</div>
 						</div>
 						<div className='card-body'>
 							<Bar
 								height={400}
 								data={data}
 								options={{
-									legendCallback: function (chart) {
-										alert('he');
-										var text = [];
-										text.push('<ul class="' + chart.id + '-legend">');
-										for (var i = 0; i < chart.data.datasets.length; i++) {
-											text.push('<li><span style="background-color:' + chart.data.datasets[i].backgroundColor + '"></span>');
-											if (chart.data.datasets[i].label) {
-												text.push(chart.data.datasets[i].label);
-											}
-											text.push('</li>');
-										}
-										text.push('</ul>');
-										return text.join('');
-									},
 									tooltips: {
 										callbacks: {
 											title: function (tooltipItem, data) {
@@ -254,7 +184,14 @@ function Revenue() {
 										],
 									},
 								}}
-								legend={{ display: false }}
+								legend={{
+									display: true,
+									position: 'bottom',
+									labels: {
+										usePointStyle: true,
+										boxWidth: 10,
+									},
+								}}
 							/>
 						</div>
 					</div>
@@ -274,7 +211,66 @@ function Revenue() {
 											<th scope='col'>Price</th>
 											<th scope='col'>purchasers</th>
 											<th scope='col'>Annually vs Monthly</th>
-											<th scope='col'></th>
+											<th scope='col'>
+												<i onClick={handleClickOpen} style={{ fontSize: '22px' }} className='fe fe-plus'></i>
+												<Dialog open={open} onClose={handleClose} aria-labelledby='alert-dialog-title' aria-describedby='alert-dialog-description'>
+													<DialogTitle id='alert-dialog-title'>{'Add Revenue'}</DialogTitle>
+													<form onSubmit={handleSubmit}>
+														<DialogContent>
+															<div className='row g-3'>
+																<div className='col-12 col-md-6 mb-3'>
+																	<label htmlFor='plaln' className='form-label'>
+																		Plan
+																	</label>
+																	<input type='text' name='plan' value={revenueForm.plan} onChange={handleRevenueChange} className='form-control' id='plan' placeholder='Plan' required />
+																</div>
+																<div className='col-12 col-md-6 mb-3'>
+																	<label htmlFor='Price' className='form-label'>
+																		Price
+																	</label>
+																	<input type='text' name='price' value={revenueForm.price} onChange={handleRevenueChange} className='form-control' id='price' placeholder='Price' required />
+																</div>
+															</div>
+
+															<div className='row g-3'>
+																<div className='col-12 col-md-12 mb-3'>
+																	<label htmlFor='purchasers' className='form-label'>
+																		Purchasers
+																	</label>
+																	<input type='text' name='purchasers' value={revenueForm.purchasers} onChange={handleRevenueChange} className='form-control' id='purchasers' placeholder='Purchasers' required />
+																</div>
+															</div>
+															<div className='row g-3'>
+																<div className='col-6 col-md-6 mb-3'>
+																	<label htmlFor='type' className='form-label'>
+																		Type
+																	</label>
+																	<select name='type' onChange={handleRevenueChange} className='form-control' id='type' placeholder='Password' required>
+																		<option selected value='anually'>
+																			Anually
+																		</option>
+																		<option value='monthly'>Monthly</option>
+																	</select>
+																</div>
+																<div className='col-6 col-md-6 mb-3'>
+																	<label htmlFor='date' className='form-label'>
+																		Date
+																	</label>
+																	<input type='date' name='date' value={revenueForm.date} onChange={handleRevenueChange} className='form-control' id='date' placeholder='Date' required />
+																</div>
+															</div>
+														</DialogContent>
+														<DialogActions>
+															<button className='btn btn-danger' onClick={handleClose}>
+																Cancel
+															</button>
+															<button type='submit' className='btn btn-primary' autoFocus>
+																Add
+															</button>
+														</DialogActions>
+													</form>
+												</Dialog>
+											</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -313,7 +309,7 @@ function Revenue() {
 												(PER NEW EMPLOYEE)
 											</th>
 											<th scope='col'>
-												<i className='fe fe-plus'></i>
+												<i style={{ fontSize: '22px' }} className='fe fe-plus'></i>
 											</th>
 										</tr>
 									</thead>
