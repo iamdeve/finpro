@@ -239,3 +239,20 @@ module.exports.profilePicture = (req, res, next) => {
 			});
 		});
 };
+
+module.exports.user = (req, res, next) => {
+	const cogUserId = req.user.payload.client_id;
+	Auth.findOne({ cogUserId: cogUserId })
+		.then(async (result) => {
+			let data = {...result.toObject()}
+			delete data.cogUserId,
+				res.status(200).json({
+					user: data,
+				});
+		})
+		.catch((err) => {
+			res.status(500).json({
+				error: err,
+			});
+		});
+};

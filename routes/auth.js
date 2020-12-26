@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/auth');
 const auth = require('../middleware/auth');
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 const multer = require('multer');
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
@@ -30,6 +30,7 @@ const upload = multer({
 	},
 	fileFilter: fileFilter,
 });
+router.get('/user', auth.Validate, authController.user);
 router.post('/signup', authController.signupWithCognito);
 router.post('/login', authController.loginWithCognito);
 router.patch('/setting', auth.Validate, authController.userSetting);
