@@ -12,7 +12,7 @@ module.exports.revenueInputValidator = [
 module.exports.userRevenu = (req, res, next) => {
 	const userCogId = req.user.payload.client_id;
 
-	Revenue.find({ userId: userCogId })
+	Revenue.findOne({ userId: userCogId })
 		.exec()
 		.then(async (result) => {
 			return res.status(200).json({ allRevenus: result });
@@ -36,7 +36,7 @@ module.exports.revenueInput = (req, res, next) => {
 	Revenue.findOne({ userId: userCogId })
 		.exec()
 		.then(async (result) => {
-			if (result && result.userId != '') {
+			if (result && result.userId !== '') {
 				console.log('revenu exist');
 				result.revenuInputs.push({
 					_id: mongoose.Types.ObjectId(),
@@ -69,7 +69,7 @@ module.exports.revenueInput = (req, res, next) => {
 					.save()
 					.then(() => {
 						console.log('revenue save');
-						res.status(500).json({ message: 'Revenue added successfully' });
+						res.status(200).json({ message: 'Revenue added successfully' });
 					})
 					.catch((err) => {
 						console.log(`last final error ${err}`);
@@ -87,7 +87,10 @@ module.exports.revenueInput = (req, res, next) => {
 		});
 };
 
-module.exports.deleteRevenueInputValidation = [check('revenueId', 'Revenue id field Should not empty').not().isEmpty(), check('revenueInputId', 'Revenue input id field Should not empty').not().isEmpty()];
+module.exports.deleteRevenueInputValidation = [
+	check('revenueId', 'Revenue id field Should not empty').not().isEmpty(), 
+	check('revenueInputId', 'Revenue input id field Should not empty').not().isEmpty()
+];
 
 module.exports.deleteRevenueInput = (req, res, next) => {
 	const errors = validationResult(req);
@@ -122,7 +125,11 @@ module.exports.deleteRevenueInput = (req, res, next) => {
 		});
 };
 
-module.exports.updateRevenueInputValidation = [check('revenueId', 'Revenue id field Should not empty').not().isEmpty(), check('revenueInputId', 'Revenue input id field Should not empty').not().isEmpty(), check('data', 'Please send at least one field').not().isEmpty()];
+module.exports.updateRevenueInputValidation = [
+	check('revenueId', 'Revenue id field Should not empty').not().isEmpty(),
+	check('revenueInputId', 'Revenue input id field Should not empty').not().isEmpty(), 
+	check('data', 'Please send at least one field').not().isEmpty()
+];
 
 module.exports.updateRevenue = (req, res, next) => {
 	const errors = validationResult(req);
@@ -168,8 +175,8 @@ module.exports.updateRevenue = (req, res, next) => {
 
 module.exports.addExpenseValidation = [
 	check('revenueId', 'Revenue id field Should not empty').not().isEmpty(),
-	check('heading', 'heading name Should not empty').not().isEmpty(),
-	check('value', 'value name Should not empty').not().isEmpty(),
+	check('heading', 'Heading name Should not empty').not().isEmpty(),
+	check('value', 'Value name Should not empty').not().isEmpty(),
 	check('cost', 'Cost input id field Should not empty').not().isEmpty(),
 ];
 
