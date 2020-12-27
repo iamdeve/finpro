@@ -5,6 +5,6 @@ const instance = axios.create({
 	baseURL: 'https://finpro-api-test.herokuapp.com/api/',
 });
 
-export const BASE_URL = 'https://finpro-api-test.herokuapp.com/api/';
+export const BASE_URL = 'https://finpro-api-test.herokuapp.com/';
 //export const BASE_URL = 'http://localhost:3001/'
 export default instance;
