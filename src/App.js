@@ -2,9 +2,14 @@ import React from 'react';
 import './App.css';
 import Routes from './routes';
 import { AuthContext, initialState, reducer } from './context/context';
-
+import { getCurrentUser } from './service';
 function App() {
 	const [state, dispatch] = React.useReducer(reducer, initialState);
+	if (getCurrentUser() && new Date(getCurrentUser().exp * 1000).getTime() < new Date().getTime()) {
+		dispatch({
+			type: 'LOGOUT',
+		});
+	}
 	return (
 		<div className='app'>
 			<AuthContext.Provider

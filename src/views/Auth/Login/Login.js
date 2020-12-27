@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import axios from '../../../context/axios';
 import { useHistory, Link } from 'react-router-dom';
 import { AuthContext } from '../../../context/context';
+import { getUser } from '../../../context/fetch-service';
 import LOGO from '../../../assets/logo.png';
 import BGImgs from '../../../assets/sign-in-cover.jpg';
 const useStyles = makeStyles((theme) => ({
@@ -16,9 +17,10 @@ function Login() {
 	const classes = useStyles();
 	const history = useHistory();
 	const { state, dispatch } = React.useContext(AuthContext);
-	const [alertClass, setAlertClass] = React.useState('');
 	const [passwordType, setPasswordType] = React.useState('password');
+	const [alertClass, setAlertClass] = React.useState('');
 	const [err, setErr] = React.useState('');
+	const [loader, setLoader] = React.useState(false);
 	const [loginForm, setLoginForm] = React.useState({
 		email: '',
 		password: '',
@@ -36,22 +38,26 @@ function Login() {
 	};
 
 	const handleSubmit = async (e) => {
+		setLoader(true);
 		e.preventDefault();
 		try {
 			let login = await axios.post('/auth/login', loginForm);
 			if (login.status === 200 || login.status === 201) {
-				console.log(login);
-				setErr('');
-				setAlertClass('show');
-				setLoginForm({
-					email: '',
-					password: '',
-				});
-				dispatch({
-					type: 'LOGIN',
-					payload: login.data.token,
-				});
-				history.push('/');
+				let user = await getUser(login.data.token);
+				if (user) {
+					setErr('');
+					setAlertClass('show');
+					setLoginForm({
+						email: '',
+						password: '',
+					});
+					dispatch({
+						type: 'LOGIN',
+						payload: { token: login.data.token, user: user },
+					});
+					setLoader(false);
+					history.push('/');
+				}
 			}
 		} catch (e) {
 			setAlertClass('show');
@@ -66,6 +72,7 @@ function Login() {
 			} else {
 				setErr(e.message);
 			}
+			setLoader(false);
 		}
 	};
 	const handleCloseAlert = () => {
@@ -103,7 +110,7 @@ function Login() {
 						<div className='form-group'>
 							<label className='form-label'>Email Address</label>
 
-							<input type='email' name='email' value={loginForm.email} onChange={handleLogin} className='form-control' placeholder='name@address.com' />
+							<input type='email' name='email' value={loginForm.email} onChange={handleLogin} className='form-control' required placeholder='name@address.com' />
 						</div>
 
 						<div className='form-group'>
@@ -119,15 +126,22 @@ function Login() {
 							</div>
 
 							<div className='input-group input-group-merge'>
-								<input className='form-control' type={passwordType} name='password' value={loginForm.password} onChange={handleLogin} placeholder='Enter your password' />
+								<input className='form-control' type={passwordType} name='password' value={loginForm.password} onChange={handleLogin} required placeholder='Enter your password' />
 
 								<span onClick={handlePwdType} className='input-group-text'>
-									<i className='fe fe-eye'></i>
+									<i style={{ cursor: 'pointer' }} className='fe fe-eye'></i>
 								</span>
 							</div>
 						</div>
 
-						<button className='btn btn-lg btn-block btn-custom mb-3'>Sign in</button>
+						<button disabled={loader} className='btn btn-lg btn-block btn-custom mb-3'>
+							{loader && (
+								<div className='spinner-border spinner-border-sm' role='status'>
+									<span className='sr-only'>Loading...</span>
+								</div>
+							)}
+							{!loader && 'Sign in'}
+						</button>
 
 						<p className='text-center'>
 							<small className='text-muted text-center'>

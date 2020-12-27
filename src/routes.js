@@ -19,11 +19,10 @@ function Routes() {
 	const {
 		state: { isAuthenticated },
 	} = React.useContext(AuthContext);
-
 	return isAuthenticated ? (
 		<MenuBar>
 			<Switch>
-				<Route exact path='/' render={() => <Redirect to='revenue' />} />
+				<Route exact path='/' render={() => <Redirect to='/revenue' />} />
 				<Route exact path='/revenue' component={Revenue} />
 				<Route exact path='/sales' component={Sales} />
 				<Route exact path='/marketing' component={Marketing} />
@@ -33,13 +32,15 @@ function Routes() {
 				<Route exact path='/settings' component={Settings} />
 				<Route exact path='/billing' component={Billing} />
 				<Route exact path='/pricing' component={Pricing} />
+				<Route path='*' render={() => <Redirect to='/revenue' />} />
 			</Switch>
 		</MenuBar>
 	) : (
 		<Switch>
-			<Route exact path='/' render={() => <Redirect to='login' />} />
+			<Route exact path='/' render={() => <Redirect to='/login' />} />
 			<Route exact path='/login' component={Login} />
 			<Route exact path='/signup' component={SignUp} />
+			<Route path='*' render={() => <Redirect to='/login' />} />
 		</Switch>
 	);
 }

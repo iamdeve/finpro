@@ -1,127 +1,79 @@
 import React from 'react';
+import { LOGIN, LOGOUT, VIEW_DATA, SET_INPUTS, SET_REVENUE, SET_USER } from './types';
 
 export const initialState = {
 	isAuthenticated: localStorage.getItem('finProtoken') ? true : false,
-	user: null,
-	token: null,
-	yearData: {
-		labels: ['2020', '2021', '2022', '2023', '2024', '2025'],
-		datasets: [
-			{
-				label: 'Year',
-				data: [25, 20, 30, 22, 17, 10, 18, 26, 28, 26, 20, 32],
-				// backgroundColor: '#0F75FA',
-				backgroundColor: 'red',
-			},
-		],
-	},
-	quarterData: {
-		labels: ['Jan-Mar', 'Apr-Jun', 'Jul-Sep', 'Oct-Dec'],
-		datasets: [
-			{
-				label: 'Quarter',
-				data: [25, 20, 30, 22, 17, 10, 18, 26, 28, 26, 20, 32],
-				backgroundColor: '#0F75FA',
-			},
-		],
-	},
-	monthData: {
-		labels: ['Jan', 'Fab', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-		datasets: [
-			{
-				label: 'Month',
-				data: [15, 10, 20, 12, 7, 0, 8, 16, 18, 16, 10, 22],
-				backgroundColor: '#0F75FA',
-				// hidden: true,
-				// borderWidth: 1,
-			},
-		],
-	},
-
+	user: localStorage.getItem('finProUser') ? JSON.parse(localStorage.getItem('finProUser')) : null,
+	token: localStorage.getItem('finProtoken') ? localStorage.getItem('finProtoken') : null,
 	data: {
 		labels: ['2020', '2021', '2022', '2023', '2024', '2025'],
 		datasets: [
 			{
-				label: 'Year',
+				label: 'Silver Plan',
 				data: [25, 20, 30, 22, 17, 10, 18, 26, 28, 26, 20, 32],
-				// backgroundColor: '#0F75FA',
-				backgroundColor: 'red',
-				hoverBackgroundColor: 'rgba(232,105,90,0.8)',
+				backgroundColor: '#53CA35',
+			},
+			{
+				label: 'Gold Plan',
+				data: [25, 20, 30, 22, 17, 10, 18, 26, 28, 26, 20, 32],
+				backgroundColor: '#F14038',
+			},
+			{
+				label: 'Platinum Plan',
+				data: [25, 20, 30, 22, 17, 10, 18, 26, 28, 26, 20, 32],
+				backgroundColor: '#4E5AC0',
+			},
+			{
+				label: 'Enter Price Plan',
+				data: [25, 20, 30, 22, 17, 10, 18, 26, 28, 26, 20, 32],
+				backgroundColor: '#9891AF',
 			},
 		],
 	},
 
-	revenueData: [
-		{
-			plan: 'Silver Plan',
-			price: '200',
-			purchasers: '20',
-			date: '12/8/2021',
-			type: 'Monthly',
-		},
-		{
-			plan: 'Gold Plan',
-			price: '800',
-			purchasers: '30',
-			date: '10/10/2022',
-			type: 'Annually',
-		},
-		{
-			plan: 'Platinum Plan',
-			price: '1200',
-			purchasers: '40',
-			date: '2/7/2021',
-			type: 'Monthly',
-		},
-	],
-	salesData: [
-		{
-			hire: 'Jorda-Lee Jennings',
-			startDate: '3/12/2021',
-			salery: '156,000',
-			taxes: 'CA-15',
-			commissions: '5678.00',
-		},
-		{
-			hire: 'Chandler Bing',
-			startDate: '4/12/2021',
-			salery: '256,000',
-			taxes: 'CA-15',
-			commissions: '5678.00',
-		},
-	],
+	revenues: [],
+	inputs: [],
 };
 export const AuthContext = React.createContext();
 
 export const reducer = (state, action) => {
 	switch (action.type) {
-		case 'LOGIN':
-			localStorage.setItem('finProtoken', JSON.stringify(action.payload));
+		case LOGIN:
+			localStorage.setItem('finProtoken', action.payload.token);
+			localStorage.setItem('finProUser', JSON.stringify(action.payload.user));
 			return {
 				...state,
 				isAuthenticated: true,
-				token: action.payload,
+				user: action.payload.user,
+				token: action.payload.token,
 			};
-		case 'LOGOUT':
+		case LOGOUT:
 			localStorage.removeItem('finProtoken');
+			localStorage.removeItem('finProUser');
 			return {
 				...state,
 				isAuthenticated: false,
+				user: null,
 				token: null,
 			};
-		case 'Add_REVENUE':
-			state.revenueData.push(action.payload);
+		case SET_USER:
+			localStorage.setItem('finProUser', JSON.stringify(action.payload));
 			return {
 				...state,
-				revenueData: state.revenueData,
+				user: action.payload,
 			};
-		case 'Add_SALES':
-			state.salesData.push(action.payload);
+		case SET_REVENUE:
 			return {
 				...state,
-				revenueData: state.salesData,
+				revenues: action.payload,
 			};
-		case 'VIEW_DATA':
+		case SET_INPUTS:
+			return {
+				...state,
+				inputs: action.payload,
+			};
+
+		case VIEW_DATA:
 			let updatedData = setData(action.payload.type, action.payload.flag, state);
 			return {
 				...state,
@@ -168,7 +120,6 @@ function setData(type, flag, state) {
 					...quarterData.datasets[0],
 					data: [...qprices],
 				};
-				// console.log(quarterData);
 			} else if (flag === 'salesData') {
 				let qdata = [...state[flag]];
 				let qprices = getQuarter(qdata, 'startDate', 'salery');

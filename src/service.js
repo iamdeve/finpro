@@ -1,10 +1,10 @@
 import jwtDecode from 'jwt-decode';
 export function logout() {
-	sessionStorage.removeItem('token');
+	localStorage.removeItem('finProtoken');
 }
 export function getCurrentUser() {
 	try {
-		const jwt = sessionStorage.getItem('token');
+		const jwt = localStorage.getItem('finProtoken');
 		return jwtDecode(jwt);
 	} catch (e) {
 		return null;
@@ -12,15 +12,15 @@ export function getCurrentUser() {
 }
 
 export function loginWithJWT(jwt) {
-	sessionStorage.setItem('token', jwt);
+	localStorage.setItem('finProtoken', jwt);
 }
 export function getJWT() {
-	return sessionStorage.getItem('token');
+	return localStorage.getItem('finProtoken');
 }
 export function getHeader() {
 	return {
 		headers: {
-			Authorization: 'Bearer '.concat(getJWT()),
+			authorization: getJWT(),
 		},
 	};
 }

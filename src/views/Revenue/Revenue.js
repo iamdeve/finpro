@@ -4,12 +4,13 @@ import { Bar } from 'react-chartjs-2';
 import { FormControl, InputBase, NativeSelect } from '@material-ui/core';
 import { AuthContext } from '../../context/context';
 import { useHistory } from 'react-router-dom';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import { ButtonGroup, Button, Dropdown, DropdownButton } from 'react-bootstrap';
 
+import { ButtonGroup, Button } from 'react-bootstrap';
+import { getRevenue } from '../../context/fetch-service';
+
+import RevenueInputs from './RevenueInputs';
+import ExpenseInputs from './ExpenseInputs';
+import StartingCapitalInput from './StartingCapitalInput';
 require('../../RoundedBars');
 
 const useStyles = makeStyles((theme) => ({
@@ -47,64 +48,59 @@ function Revenue() {
 	const history = useHistory();
 	const classes = useStyles();
 	const {
-		state: { revenueData, data, isAuthenticated },
+		state: { revenues, data, isAuthenticated },
 		dispatch,
 	} = React.useContext(AuthContext);
+
 	const [chartValue, setChartValue] = React.useState('year');
 	const handleChange = (event) => {
 		setChartValue(event.target.value);
-		dispatch({ type: 'VIEW_DATA', payload: { type: event.target.value, flag: 'revenueData' } });
 	};
+
+	const [msg, setMsg] = React.useState('');
+	const [err, setErr] = React.useState('');
+	const [alertClass, setAlertClass] = React.useState('');
+
+	const handleCloseAlert = () => {
+		setAlertClass('hide');
+		setErr('');
+		setMsg('');
+	};
+
 	React.useEffect(() => {
-		dispatch({ type: 'VIEW_DATA', payload: { type: 'year', flag: 'revenueData' } });
 		if (!isAuthenticated) {
 			history.push('/login');
 		}
+		async function fetchRevenue() {
+			let revenues = await getRevenue();
+			dispatch({
+				type: 'SET_REVENUE',
+				payload: revenues,
+			});
+		}
+		fetchRevenue();
 	}, [isAuthenticated, history, dispatch]);
 
-	const [open, setOpen] = React.useState(false);
-
-	const handleClickOpen = () => {
-		setOpen(true);
-	};
-
-	const handleClose = () => {
-		setOpen(false);
-	};
-
-	const [revenueForm, setRevenueForm] = React.useState({
-		plan: '',
-		price: '',
-		purchasers: '',
-		type: '',
-		date: '',
-	});
-
-	const handleRevenueChange = (e) => {
-		const { name, value } = e.target;
-		setRevenueForm((prevState) => {
-			return {
-				...prevState,
-				[name]: value,
-			};
-		});
-	};
-
-	const handleSubmit = (e) => {
-		e.preventDefault();
-		dispatch({
-			type: 'Add_REVENUE',
-			payload: { ...revenueForm },
-		});
-		setRevenueForm({});
-		setOpen(false);
-		dispatch({ type: 'VIEW_DATA', payload: { type: chartValue, flag: 'revenueData' } });
-	};
-	console.log(revenueData);
 	return (
 		<div className='container-fluid'>
 			<div className='row'>
 				<div className='col-12 col-xl-12'>
+					{msg && (
+						<div className={`alert alert-success alert-dismissible fade ${alertClass}`} role='alert'>
+							<strong>{msg}</strong>
+							<button onClick={handleCloseAlert} type='button' className='close' data-dismiss='alert' aria-label='Close'>
+								<span aria-hidden='true'>×</span>
+							</button>
+						</div>
+					)}
+					{err && (
+						<div className={`alert alert-danger alert-dismissible fade ${alertClass}`} role='alert'>
+							<strong>{err}</strong>
+							<button onClick={handleCloseAlert} type='button' className='close' data-dismiss='alert' aria-label='Close'>
+								<span aria-hidden='true'>×</span>
+							</button>
+						</div>
+					)}
 					<div className='card'>
 						<div className='card-header'>
 							<h4 className='card-header-title'>Revenue</h4>
@@ -155,6 +151,7 @@ function Revenue() {
 										displayColors: false,
 									},
 									cornerRadius: 20,
+									responsive: true,
 									maintainAspectRatio: false,
 									scales: {
 										yAxes: [
@@ -169,13 +166,14 @@ function Revenue() {
 													borderDash: [2],
 													zeroLineColor: 'transparent',
 													zeroLineWidth: 0,
+													tickMarkLength: 15,
 												},
 											},
 										],
 										xAxes: [
 											{
-												categorySpacing: 0,
-												barThickness: 10,
+												// barThickness: 10,
+												barPercentage: 0.3,
 												gridLines: {
 													lineWidth: 0,
 													zeroLineColor: 'transparent',
@@ -198,152 +196,19 @@ function Revenue() {
 				</div>
 
 				<div className='col-8 col-xl-7'>
-					<div className='card'>
-						<div className='card-header'>
-							<h4 className='card-header-title'>Revenue Inputs</h4>
-						</div>
-						<div className='card-body'>
-							<div className='table-responsive'>
-								<table className='table table-sm table-hover table-nowrap mb-0'>
-									<thead>
-										<tr>
-											<th scope='col'>Play Name</th>
-											<th scope='col'>Price</th>
-											<th scope='col'>purchasers</th>
-											<th scope='col'>Annually vs Monthly</th>
-											<th scope='col'>
-												<i onClick={handleClickOpen} style={{ fontSize: '22px' }} className='fe fe-plus'></i>
-												<Dialog open={open} onClose={handleClose} aria-labelledby='alert-dialog-title' aria-describedby='alert-dialog-description'>
-													<DialogTitle id='alert-dialog-title'>{'Add Revenue'}</DialogTitle>
-													<form onSubmit={handleSubmit}>
-														<DialogContent>
-															<div className='row g-3'>
-																<div className='col-12 col-md-6 mb-3'>
-																	<label htmlFor='plaln' className='form-label'>
-																		Plan
-																	</label>
-																	<input type='text' name='plan' value={revenueForm.plan} onChange={handleRevenueChange} className='form-control' id='plan' placeholder='Plan' required />
-																</div>
-																<div className='col-12 col-md-6 mb-3'>
-																	<label htmlFor='Price' className='form-label'>
-																		Price
-																	</label>
-																	<input type='text' name='price' value={revenueForm.price} onChange={handleRevenueChange} className='form-control' id='price' placeholder='Price' required />
-																</div>
-															</div>
+					<h4>Revenue Inputs</h4>
+					<RevenueInputs revenues={revenues} setMsg={setMsg} setErr={setErr} setAlertClass={setAlertClass} />
 
-															<div className='row g-3'>
-																<div className='col-12 col-md-12 mb-3'>
-																	<label htmlFor='purchasers' className='form-label'>
-																		Purchasers
-																	</label>
-																	<input type='text' name='purchasers' value={revenueForm.purchasers} onChange={handleRevenueChange} className='form-control' id='purchasers' placeholder='Purchasers' required />
-																</div>
-															</div>
-															<div className='row g-3'>
-																<div className='col-6 col-md-6 mb-3'>
-																	<label htmlFor='type' className='form-label'>
-																		Type
-																	</label>
-																	<select name='type' onChange={handleRevenueChange} className='form-control' id='type' placeholder='Password' required>
-																		<option selected value='anually'>
-																			Anually
-																		</option>
-																		<option value='monthly'>Monthly</option>
-																	</select>
-																</div>
-																<div className='col-6 col-md-6 mb-3'>
-																	<label htmlFor='date' className='form-label'>
-																		Date
-																	</label>
-																	<input type='date' name='date' value={revenueForm.date} onChange={handleRevenueChange} className='form-control' id='date' placeholder='Date' required />
-																</div>
-															</div>
-														</DialogContent>
-														<DialogActions>
-															<button className='btn btn-danger' onClick={handleClose}>
-																Cancel
-															</button>
-															<button type='submit' className='btn btn-primary' autoFocus>
-																Add
-															</button>
-														</DialogActions>
-													</form>
-												</Dialog>
-											</th>
-										</tr>
-									</thead>
-									<tbody>
-										{revenueData.map((rev, id) => (
-											<tr key={id}>
-												<td>{rev.plan}</td>
-												<td>${rev.price}</td>
-												<td>{rev.purchasers}</td>
-												<td>{rev.type}</td>
-												<td>
-													<span>
-														<i className='fe fe-edit'></i> <i className='fe fe-x-square'></i>
-													</span>
-												</td>
-											</tr>
-										))}
-									</tbody>
-								</table>
-							</div>
+					<div className='row'>
+						<div className='col-8 col-xl-8'>
+							<h4>Starting Capital</h4>
+							<StartingCapitalInput revenueId={revenues._id} startingCapital={revenues.startingCapital} setMsg={setMsg} setErr={setErr} setAlertClass={setAlertClass} />
 						</div>
 					</div>
 				</div>
 				<div className='col-4 col-xl-5'>
-					<div className='card'>
-						<div className='card-header'>
-							<h4 className='card-header-title'>Revenue Costs</h4>
-						</div>
-						<div className='card-body'>
-							<div className='table-responsive'>
-								<table className='table table-sm table-hover table-nowrap mb-0'>
-									<thead>
-										<tr>
-											<th scope='col'>Revenue Drivers</th>
-											<th scope='col'>
-												Cost <br />
-												(PER NEW EMPLOYEE)
-											</th>
-											<th scope='col'>
-												<i style={{ fontSize: '22px' }} className='fe fe-plus'></i>
-											</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr>
-											<td>Subsctiption 1</td>
-											<td>$1,800</td>
-											<td>
-												<span>
-													<i className='fe fe-edit'></i> |<i className='fe fe-x-square'></i>
-												</span>
-											</td>
-										</tr>
-										<tr>
-											<td>Subsctiption 1</td>
-											<td>$1,800</td>
-											<td>
-												{' '}
-												<i className='fe fe-edit'></i> |<i className='fe fe-x-square'></i>
-											</td>
-										</tr>
-										<tr>
-											<td>Subsctiption 1</td>
-											<td>$1,800</td>
-											<td>
-												{' '}
-												<i className='fe fe-edit'></i> |<i className='fe fe-x-square'></i>
-											</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-						</div>
-					</div>
+					<h4>Major Expense Inputs</h4>
+					{revenues && revenues._id && <ExpenseInputs revenueId={revenues._id} expenseInputs={revenues.majorExpenseInput} setMsg={setMsg} setErr={setErr} setAlertClass={setAlertClass} />}
 				</div>
 			</div>
 		</div>

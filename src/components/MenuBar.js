@@ -11,6 +11,7 @@ import InsertChartOutlinedIcon from '@material-ui/icons/InsertChartOutlined';
 import LOGO from '../assets/logo-black.png';
 import { Dropdown } from 'react-bootstrap';
 import Profile from '../assets/profile.png';
+import { BASE_URL } from '../context/axios';
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -60,7 +61,8 @@ const useStyles = makeStyles((theme) => ({
 	ProfileIcon: {
 		cursor: 'pointer',
 		'& img': {
-			width: '3rem',
+			width: '2.5rem',
+			height: '2.5rem',
 			border: '2px solid #4b54b4',
 			borderRadius: '50%',
 		},
@@ -71,11 +73,10 @@ function MenuBar(props) {
 	const history = useHistory();
 	const classes = useStyles();
 	const {
-		state: { isAuthenticated },
+		state: { user, isAuthenticated },
 		dispatch,
 	} = React.useContext(AuthContext);
 
-	console.log(props);
 	const handleLogout = () => {
 		dispatch({
 			type: 'LOGOUT',
@@ -102,11 +103,11 @@ function MenuBar(props) {
 					<div style={{ flexGrow: 1 }}></div>
 					<Dropdown>
 						<Dropdown.Toggle as={CustomToggle} id='dropdown-custom-components'>
-							<img src={Profile} alt='user profile' />
+							<img src={user && user.profile ? `${BASE_URL}${user.profile}` : Profile} alt='user profile' />
 						</Dropdown.Toggle>
 
 						<Dropdown.Menu>
-							<Dropdown.Item>User Name</Dropdown.Item>
+							<Dropdown.Item>{user && user.firstName && user.lastName ? user.firstName + ' ' + user.lastName : user.email}</Dropdown.Item>
 							<Dropdown.Divider></Dropdown.Divider>
 							<Dropdown.Item as={Link} to='/settings'>
 								Settings

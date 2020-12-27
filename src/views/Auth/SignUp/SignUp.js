@@ -16,9 +16,10 @@ function SignUp() {
 
 	const [alertClass, setAlertClass] = React.useState('');
 	const [msg, setMsg] = React.useState('');
+	const [err, setErr] = React.useState(''); 
+	const [loader, setLoader] = React.useState(false);
 
 	const [passwordType, setPasswordType] = React.useState('password');
-	const [err, setErr] = React.useState('');
 	const [signupForm, setSignupForm] = React.useState({
 		email: '',
 		cpassword: '',
@@ -36,6 +37,7 @@ function SignUp() {
 	};
 
 	const handleSubmit = async (e) => {
+		setLoader(true);
 		e.preventDefault();
 		try {
 			let signup = await axios.post('/auth/signup', signupForm);
@@ -47,6 +49,7 @@ function SignUp() {
 					password: '',
 				});
 				setMsg('Successfully Registered');
+				setLoader(false);
 			}
 		} catch (e) {
 			setAlertClass('show');
@@ -60,6 +63,7 @@ function SignUp() {
 			} else {
 				setErr(e.message);
 			}
+			setLoader(false);
 		}
 	};
 	const handleCloseAlert = () => {
@@ -107,22 +111,29 @@ function SignUp() {
 						<div className='form-group'>
 							<label className='form-label'>Email Address</label>
 
-							<input type='email' name='email' value={signupForm.email} onChange={handleSignUp} className='form-control' placeholder='name@address.com' />
+							<input type='email' name='email' value={signupForm.email} onChange={handleSignUp} className='form-control' required placeholder='name@address.com' />
 						</div>
 
 						<div className='form-group'>
 							<label className='form-label'>Password</label>
 
 							<div className='input-group input-group-merge'>
-								<input className='form-control' name='password' value={signupForm.password} onChange={handleSignUp} type={passwordType} placeholder='Enter your password' />
+								<input className='form-control' name='password' value={signupForm.password} onChange={handleSignUp} required type={passwordType} placeholder='Enter your password' />
 
 								<span onClick={handlePwdType} className='input-group-text'>
-									<i className='fe fe-eye'></i>
+									<i style={{ cursor: 'pointer' }} className='fe fe-eye'></i>
 								</span>
 							</div>
 						</div>
 
-						<button className='btn btn-lg btn-block btn-custom mb-3'>Sign up for 30-days free trial</button>
+						<button disabled={loader} className='btn btn-lg btn-block btn-custom mb-3'>
+							{loader && (
+								<div className='spinner-border spinner-border-sm' role='status'>
+									<span className='sr-only'>Loading...</span>
+								</div>
+							)}
+							{!loader && 'Sign up for 30-days free trial'}
+						</button>
 
 						<div className='text-center'>
 							<small className='text-muted text-center'>
