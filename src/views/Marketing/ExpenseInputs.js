@@ -25,7 +25,8 @@ function ExpenseInputs({ marketingId, expenseInputs, setMsg, setErr, setAlertCla
 		setOpen(true);
 	};
 
-	const handleClose = () => {
+	const handleClose = (e) => {
+		e.preventDefault();
 		setOpen(false);
 	};
 

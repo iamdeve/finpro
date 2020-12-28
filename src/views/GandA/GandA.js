@@ -10,7 +10,8 @@ import { getInputs } from '../../context/fetch-service';
 
 import GandAInputs from './GandAInputs';
 import ExpenseInputs from './ExpenseInputs';
-require('../../RoundedBars');
+
+import { getYearSum, duplicateCounter, getTotal } from '../../utils/getYearSum';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -102,97 +103,74 @@ function GandA() {
 							</button>
 						</div>
 					)}
-					<div className='card'>
-						<div className='card-header'>
-							<h4 className='card-header-title'>G & A</h4>
-							<div className='chart-handle-grup'>
-								<div className='chart-dropdown'>
-									<span className='mr-3'>View By :</span>
-									<FormControl variant='outlined' className={classes.margin}>
-										<NativeSelect id='demo-customized-select-native' value={chartValue} onChange={handleChange} input={<BootstrapInput />}>
-											<option defaultValue='year' value='year'>
-												Year
-											</option>
-											<option value='quarter'>Quarter</option>
-											<option value='month'>Month</option>
-										</NativeSelect>
-									</FormControl>
-								</div>
-								<ButtonGroup aria-label='Basic example'>
-									<Button className='btn-custom-group'>Export</Button>
-									<Button className='btn-custom-group'>CSV</Button>
-									<Button className='btn-custom-group'>PDF</Button>
-								</ButtonGroup>
+					<div className='table-container-header'>
+						<h4 className=''>G&A</h4>
+						<div className='chart-handle-grup'>
+							<div className='chart-dropdown'>
+								<span className='mr-3'>View By :</span>
+								<FormControl variant='outlined' className={classes.margin}>
+									<NativeSelect id='demo-customized-select-native' value={chartValue} onChange={handleChange} input={<BootstrapInput />}>
+										<option defaultValue='year' value='year'>
+											Year
+										</option>
+										<option value='quarter'>Quarter</option>
+										<option value='month'>Month</option>
+									</NativeSelect>
+								</FormControl>
 							</div>
+							<ButtonGroup aria-label='Basic example'>
+								<Button className='btn-custom-group'>Export</Button>
+								<Button className='btn-custom-group'>CSV</Button>
+								<Button className='btn-custom-group'>PDF</Button>
+							</ButtonGroup>
 						</div>
-						<div className='card-body'>
-							<Bar
-								height={400}
-								data={data}
-								options={{
-									tooltips: {
-										callbacks: {
-											title: function (tooltipItem, data) {
-												return data['labels'][tooltipItem[0]['index']];
-											},
-											label: function (tooltipItem, data) {
-												return data['datasets'][0]['data'][tooltipItem['index']] + '%';
-											},
-											afterLabel: function (tooltipItem, data) {},
-										},
-										backgroundColor: '#FFF',
-										borderWidth: 2,
-										xPadding: 15,
-										yPadding: 15,
-										borderColor: '#ddd',
-										titleFontSize: 16,
-										titleFontColor: '#0066ff',
-										bodyFontColor: '#000',
-										bodyFontSize: 14,
-										displayColors: false,
-									},
-									cornerRadius: 20,
-									responsive: true,
-									maintainAspectRatio: false,
-									scales: {
-										yAxes: [
-											{
-												ticks: {
-													callback: function (value) {
-														return value + '%';
-													},
-													beginAtZero: true,
-												},
-												gridLines: {
-													borderDash: [2],
-													zeroLineColor: 'transparent',
-													zeroLineWidth: 0,
-													tickMarkLength: 15,
-												},
-											},
-										],
-										xAxes: [
-											{
-												// barThickness: 10,
-												barPercentage: 0.3,
-												gridLines: {
-													lineWidth: 0,
-													zeroLineColor: 'transparent',
-												},
-											},
-										],
-									},
-								}}
-								legend={{
-									display: true,
-									position: 'bottom',
-									labels: {
-										usePointStyle: true,
-										boxWidth: 10,
-									},
-								}}
-							/>
-						</div>
+					</div>
+
+					<div className='custom-table-container'>
+						<table>
+							<thead>
+								<tr>
+									<th></th>
+									{duplicateCounter(ganda) &&
+										duplicateCounter(ganda)
+											.splice(-4)
+											.map((year, id) => <th key={id}>{new Date(year.startDate).getFullYear()}</th>)}
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<th>Headcounts</th>
+									{duplicateCounter(ganda) &&
+										duplicateCounter(ganda)
+											.splice(-4)
+											.map((data, id) => <td key={id}>{data.count}</td>)}
+								</tr>
+								<tr>
+									<th>Salaries</th>
+									{ganda &&
+										ganda.inputs &&
+										Object.keys(getYearSum(ganda.inputs, 'salary'))
+											.splice(-4)
+											.map((data, id) => <td key={id}>${getYearSum(ganda.inputs, 'salary')[data]}</td>)}
+								</tr>
+								<tr>
+									<th>Benifits & Taxes</th>
+									{ganda &&
+										ganda.inputs &&
+										Object.keys(getYearSum(ganda.inputs, 'taxes'))
+											.splice(-4)
+											.map((data, id) => <td key={id}>${getYearSum(ganda.inputs, 'taxes')[data]}</td>)}
+								</tr>
+								<tr>
+									<th>Commissions</th>
+									{ganda && ganda.inputs && Object.keys(getYearSum(ganda.inputs, 'commissions')).map((data, id) => <td key={id}>${getYearSum(ganda.inputs, 'commissions')[data]}</td>)}
+								</tr>
+								<tr>
+									<th>Total Payroll</th>
+									{ganda && ganda.inputs && Object.keys(getTotal(ganda.inputs)).map((data, id) => <td key={id}>${getTotal(ganda.inputs)[data]}</td>)}
+								</tr>
+							</tbody>
+						</table>
 					</div>
 				</div>
 

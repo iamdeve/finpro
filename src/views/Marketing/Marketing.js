@@ -1,6 +1,5 @@
 import React from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { Bar } from 'react-chartjs-2';
 import { FormControl, InputBase, NativeSelect } from '@material-ui/core';
 import { AuthContext } from '../../context/context';
 import { useHistory } from 'react-router-dom';
@@ -10,7 +9,8 @@ import { getInputs } from '../../context/fetch-service';
 
 import MarketingInputs from './MarketingInputs';
 import ExpenseInputs from './ExpenseInputs';
-require('../../RoundedBars');
+
+import { getYearSum, duplicateCounter, getTotal } from '../../utils/getYearSum';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -102,97 +102,74 @@ function Marketing() {
 							</button>
 						</div>
 					)}
-					<div className='card'>
-						<div className='card-header'>
-							<h4 className='card-header-title'>Marketing</h4>
-							<div className='chart-handle-grup'>
-								<div className='chart-dropdown'>
-									<span className='mr-3'>View By :</span>
-									<FormControl variant='outlined' className={classes.margin}>
-										<NativeSelect id='demo-customized-select-native' value={chartValue} onChange={handleChange} input={<BootstrapInput />}>
-											<option defaultValue='year' value='year'>
-												Year
-											</option>
-											<option value='quarter'>Quarter</option>
-											<option value='month'>Month</option>
-										</NativeSelect>
-									</FormControl>
-								</div>
-								<ButtonGroup aria-label='Basic example'>
-									<Button className='btn-custom-group'>Export</Button>
-									<Button className='btn-custom-group'>CSV</Button>
-									<Button className='btn-custom-group'>PDF</Button>
-								</ButtonGroup>
+					<div className='table-container-header'>
+						<h4 className=''>Marketing</h4>
+						<div className='chart-handle-grup'>
+							<div className='chart-dropdown'>
+								<span className='mr-3'>View By :</span>
+								<FormControl variant='outlined' className={classes.margin}>
+									<NativeSelect id='demo-customized-select-native' value={chartValue} onChange={handleChange} input={<BootstrapInput />}>
+										<option defaultValue='year' value='year'>
+											Year
+										</option>
+										<option value='quarter'>Quarter</option>
+										<option value='month'>Month</option>
+									</NativeSelect>
+								</FormControl>
 							</div>
+							<ButtonGroup aria-label='Basic example'>
+								<Button className='btn-custom-group'>Export</Button>
+								<Button className='btn-custom-group'>CSV</Button>
+								<Button className='btn-custom-group'>PDF</Button>
+							</ButtonGroup>
 						</div>
-						<div className='card-body'>
-							<Bar
-								height={400}
-								data={data}
-								options={{
-									tooltips: {
-										callbacks: {
-											title: function (tooltipItem, data) {
-												return data['labels'][tooltipItem[0]['index']];
-											},
-											label: function (tooltipItem, data) {
-												return data['datasets'][0]['data'][tooltipItem['index']] + '%';
-											},
-											afterLabel: function (tooltipItem, data) {},
-										},
-										backgroundColor: '#FFF',
-										borderWidth: 2,
-										xPadding: 15,
-										yPadding: 15,
-										borderColor: '#ddd',
-										titleFontSize: 16,
-										titleFontColor: '#0066ff',
-										bodyFontColor: '#000',
-										bodyFontSize: 14,
-										displayColors: false,
-									},
-									cornerRadius: 20,
-									responsive: true,
-									maintainAspectRatio: false,
-									scales: {
-										yAxes: [
-											{
-												ticks: {
-													callback: function (value) {
-														return value + '%';
-													},
-													beginAtZero: true,
-												},
-												gridLines: {
-													borderDash: [2],
-													zeroLineColor: 'transparent',
-													zeroLineWidth: 0,
-													tickMarkLength: 15,
-												},
-											},
-										],
-										xAxes: [
-											{
-												// barThickness: 10,
-												barPercentage: 0.3,
-												gridLines: {
-													lineWidth: 0,
-													zeroLineColor: 'transparent',
-												},
-											},
-										],
-									},
-								}}
-								legend={{
-									display: true,
-									position: 'bottom',
-									labels: {
-										usePointStyle: true,
-										boxWidth: 10,
-									},
-								}}
-							/>
-						</div>
+					</div>
+
+					<div className='custom-table-container'>
+						<table>
+							<thead>
+								<tr>
+									<th></th>
+									{duplicateCounter(marketing) &&
+										duplicateCounter(marketing)
+											.splice(-4)
+											.map((year, id) => <th key={id}>{new Date(year.startDate).getFullYear()}</th>)}
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<th>Headcounts</th>
+									{duplicateCounter(marketing) &&
+										duplicateCounter(marketing)
+											.splice(-4)
+											.map((data, id) => <td key={id}>{data.count}</td>)}
+								</tr>
+								<tr>
+									<th>Salaries</th>
+									{marketing &&
+										marketing.inputs &&
+										Object.keys(getYearSum(marketing.inputs, 'salary'))
+											.splice(-4)
+											.map((data, id) => <td key={id}>${getYearSum(marketing.inputs, 'salary')[data]}</td>)}
+								</tr>
+								<tr>
+									<th>Benifits & Taxes</th>
+									{marketing &&
+										marketing.inputs &&
+										Object.keys(getYearSum(marketing.inputs, 'taxes'))
+											.splice(-4)
+											.map((data, id) => <td key={id}>${getYearSum(marketing.inputs, 'taxes')[data]}</td>)}
+								</tr>
+								<tr>
+									<th>Commissions</th>
+									{marketing && marketing.inputs && Object.keys(getYearSum(marketing.inputs, 'commissions')).map((data, id) => <td key={id}>${getYearSum(marketing.inputs, 'commissions')[data]}</td>)}
+								</tr>
+								<tr>
+									<th>Total Payroll</th>
+									{marketing && marketing.inputs && Object.keys(getTotal(marketing.inputs)).map((data, id) => <td key={id}>${getTotal(marketing.inputs)[data]}</td>)}
+								</tr>
+							</tbody>
+						</table>
 					</div>
 				</div>
 

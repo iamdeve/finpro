@@ -33,6 +33,31 @@ export const initialState = {
 
 	revenues: [],
 	inputs: [],
+	reports: {
+		labels: ['2021', '2022', '2023', '2024', '2025'],
+		datasets: [
+			{
+				label: 'Revenue',
+				data: [300, 490, 800, 1500, 1800],
+				backgroundColor: '#53CA35',
+			},
+			{
+				label: 'Expenses',
+				data: [500, 900, 1200, 1100, 1200],
+				backgroundColor: '#F14038',
+			},
+			{
+				label: 'Operating Profit',
+				data: [-50, -150, -200, 200, 400],
+				backgroundColor: '#4E5AC0',
+			},
+			{
+				label: 'EBIT',
+				data: [-150, -300, -500, 100, 300],
+				backgroundColor: '#9891AF',
+			},
+		],
+	},
 };
 export const AuthContext = React.createContext();
 

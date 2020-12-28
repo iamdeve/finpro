@@ -25,7 +25,8 @@ function ExpenseInputs({ salesId, expenseInputs, setMsg, setErr, setAlertClass }
 		setOpen(true);
 	};
 
-	const handleClose = () => {
+	const handleClose = (e) => {
+		e.preventDefault();
 		setOpen(false);
 	};
 
@@ -243,7 +244,7 @@ function ExpenseInputs({ salesId, expenseInputs, setMsg, setErr, setAlertClass }
 										.map((expInp, id) => (
 											<tr key={id}>
 												<td>{expInp.value}</td>
-												<td>{expInp.cost}</td>
+												<td>${expInp.cost}</td>
 												<td>{expInp.perEmployee}</td>
 												<td>
 													<span>
@@ -304,7 +305,7 @@ function ExpenseInputs({ salesId, expenseInputs, setMsg, setErr, setAlertClass }
 										.map((expInp, id) => (
 											<tr key={id}>
 												<td>{expInp.value}</td>
-												<td>{expInp.cost}</td>
+												<td>${expInp.cost}</td>
 												<td>{expInp.perEmployee}</td>
 												<td>
 													<span>
@@ -363,7 +364,7 @@ function ExpenseInputs({ salesId, expenseInputs, setMsg, setErr, setAlertClass }
 										.map((expInp, id) => (
 											<tr key={id}>
 												<td>{expInp.value}</td>
-												<td>{expInp.cost}</td>
+												<td>${expInp.cost}</td>
 												<td>{expInp.perEmployee}</td>
 												<td>
 													<span>
@@ -423,7 +424,7 @@ function ExpenseInputs({ salesId, expenseInputs, setMsg, setErr, setAlertClass }
 										.map((expInp, id) => (
 											<tr key={id}>
 												<td>{expInp.value}</td>
-												<td>{expInp.cost}</td>
+												<td>${expInp.cost}</td>
 												<td>{expInp.date}</td>
 												<td>
 													<span>

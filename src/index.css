@@ -63,10 +63,16 @@ a.nav-link{
   color: #bbb;
 }
 a.nav-link:hover{
-  color: #fff;
+  color: #000;
+  background: #5AC2DE;
 }
 li.nav-item > a.active{
-  color: #fff;
+  color: #000;
+  background: #5AC2DE;
+}
+
+.navbar-nav .nav-link.active:before{
+  display:none;
 }
 .navbar-nav .MuiSvgIcon-root{
   font-size: 1.0625rem !important;
@@ -172,7 +178,7 @@ li.nav-item > a.active{
 }
 
 .chart-dropdown .MuiNativeSelect-outlined.MuiNativeSelect-outlined{
-  padding-right: 10px;
+  /* padding-right: 10px; */
 }
 
 .btn-custom-group{
@@ -216,6 +222,50 @@ li.nav-item > a.active{
 
 .file-type-container:hover .btn-type-file{
   display: flex;
+}
+
+.full-height{
+  height: 100vh;
+}
+.report-container{
+  margin: 2rem 0;
+}
+.control-panel{
+  height: 100%;
+  border-right: 3px solid #ccc;
+}
+
+
+.control-btn{
+  margin-bottom: 1rem;
+}
+
+
+.table-container-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem 0;
+}
+.custom-table-container > table{
+  width: 100%;
+  margin: 2rem 0;
+}
+.custom-table-container > table > tbody > tr, .custom-table-container > table > tbody > tr > td {
+  border: 1px solid #ddd;
+  padding: .5rem;
+  text-align: right;
+}
+.custom-table-container > table > thead > tr >th{
+  text-align: center;
+  padding: .5rem;
+}
+.custom-table-container > table > tbody > tr >th{
+  text-align: center;
+}
+
+.custom-table-container > table > tbody > tr:last-child > td{
+  font-weight: bold;
 }
 
 

@@ -21,7 +21,8 @@ function SalesInputs({ sales, setMsg, setErr, setAlertClass }) {
 		setOpen(true);
 	};
 
-	const handleClose = () => {
+	const handleClose = (e) => {
+		e.preventDefault();
 		setOpen(false);
 	};
 

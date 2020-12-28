@@ -17,7 +17,8 @@ function StartingCapitalInput({ revenueId, startingCapital, setMsg, setErr, setA
 		setOpen(true);
 	};
 
-	const handleClose = () => {
+	const handleClose = (e) => {
+		e.preventDefault();
 		setOpen(false);
 	};
 
@@ -196,7 +197,7 @@ function StartingCapitalInput({ revenueId, startingCapital, setMsg, setErr, setA
 								startingCapital.map((rev, id) => (
 									<tr key={id}>
 										<td>{rev.source}</td>
-										<td>{rev.amount}</td>
+										<td>${rev.amount}</td>
 										<td>
 											<span>
 												<i title='Edit Plan' style={{ cursor: 'pointer' }} className='fe fe-edit edit-icon' onClick={() => handleEditPlan(rev._id, rev)}></i>

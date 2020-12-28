@@ -19,7 +19,8 @@ function RevenueInputs({ revenues, setMsg, setErr, setAlertClass }) {
 		setOpen(true);
 	};
 
-	const handleClose = () => {
+	const handleClose = (e) => {
+		e.preventDefault();
 		setOpen(false);
 	};
 
@@ -211,7 +212,7 @@ function RevenueInputs({ revenues, setMsg, setErr, setAlertClass }) {
 														<label htmlFor='date' className='form-label'>
 															Date
 														</label>
-														<input type='date' name='date' value={revenueForm.date} onChange={handleRevenueChange} className='form-control' id='date' placeholder='Date' required />
+														<input type='date' name='date' value={revenueForm.date} onChange={handleRevenueChange} className='form-control' id='date' placeholder='Date' />
 													</div>
 												</div>
 											</DialogContent>

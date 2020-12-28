@@ -11,7 +11,6 @@ import { getRevenue } from '../../context/fetch-service';
 import RevenueInputs from './RevenueInputs';
 import ExpenseInputs from './ExpenseInputs';
 import StartingCapitalInput from './StartingCapitalInput';
-require('../../RoundedBars');
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -135,7 +134,14 @@ function Revenue() {
 												return data['labels'][tooltipItem[0]['index']];
 											},
 											label: function (tooltipItem, data) {
-												return data['datasets'][0]['data'][tooltipItem['index']] + '%';
+												let value;
+												data['datasets'].forEach((d) => {
+													if (d['data'][tooltipItem['index']] === Number(tooltipItem.value)) {
+														value = '$ ' + d['data'][tooltipItem['index']];
+													}
+												});
+												// console.log(value)
+												return value;
 											},
 											afterLabel: function (tooltipItem, data) {},
 										},
@@ -161,6 +167,7 @@ function Revenue() {
 														return value + '%';
 													},
 													beginAtZero: true,
+													stepSize: 200,
 												},
 												gridLines: {
 													borderDash: [2],
@@ -202,7 +209,7 @@ function Revenue() {
 					<div className='row'>
 						<div className='col-8 col-xl-8'>
 							<h4>Starting Capital</h4>
-							<StartingCapitalInput revenueId={revenues._id} startingCapital={revenues.startingCapital} setMsg={setMsg} setErr={setErr} setAlertClass={setAlertClass} />
+							{revenues && revenues._id && <StartingCapitalInput revenueId={revenues._id} startingCapital={revenues.startingCapital} setMsg={setMsg} setErr={setErr} setAlertClass={setAlertClass} />}
 						</div>
 					</div>
 				</div>

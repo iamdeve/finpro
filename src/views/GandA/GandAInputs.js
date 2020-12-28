@@ -21,7 +21,8 @@ function GandAInputs({ ganda, setMsg, setErr, setAlertClass }) {
 		setOpen(true);
 	};
 
-	const handleClose = () => {
+	const handleClose = (e) => {
+		e.preventDefault();
 		setOpen(false);
 	};
 
