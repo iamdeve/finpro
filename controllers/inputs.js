@@ -3,7 +3,7 @@ const Inputs = require('../models/inputs');
 const { check, validationResult } = require('express-validator');
 
 module.exports.userInputs = (req, res, next) => {
-	const userCogId = req.user.payload.client_id;
+	const userCogId = req.user.payload.email;
 
 	Inputs.find({ userId: userCogId })
 		.exec()
@@ -31,7 +31,7 @@ module.exports.addInputs = (req, res, next) => {
 	if (!errors.isEmpty()) {
 		return res.status(400).json({ errors: errors.array() });
 	}
-	const userCogId = req.user.payload.client_id;
+	const userCogId = req.user.payload.email;
 
 	const { hire, startDate, salary, taxes, commissions, title } = req.body;
 
@@ -188,7 +188,7 @@ module.exports.addExpense = (req, res, next) => {
 				value,
 				cost,
 				perEmployee,
-				date
+				date,
 			});
 
 			console.log(result.majorExpenseInput);

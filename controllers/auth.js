@@ -33,11 +33,12 @@ module.exports.signupWithCognito = async (req, res, next) => {
 			});
 		}
 		var cognitoUser = result.user;
-		console.log(cognitoUser);
+		console.log(cognitoUser.getUsername());
+
 		let user = new Auth({
 			_id: mongoose.Types.ObjectId(),
 			email: email,
-			cogUserId: cognitoUser.pool.clientId,
+			cogUserId: cognitoUser.getUsername(),
 		});
 		try {
 			await user.save();
@@ -68,7 +69,9 @@ module.exports.loginWithCognito = (req, res, next) => {
 	const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
 	cognitoUser.authenticateUser(authenticationDetails, {
 		onSuccess: function (result) {
-			const accesstoken = result.getAccessToken().getJwtToken();
+			// console.log(result.getIdToken().getJwtToken())
+			// const accesstoken = result.getAccessToken().getJwtToken();
+			const accesstoken = result.getIdToken().getJwtToken();
 			return res.status(201).json({
 				token: accesstoken,
 			});
@@ -196,7 +199,7 @@ module.exports.userSetting = (req, res, next) => {
 		return res.status(400).json({ error: 'Payload must not be empty' });
 	}
 	const userData = req.body;
-	const cogUserId = req.user.payload.client_id;
+	const cogUserId = req.user.payload.email;
 	Auth.findOneAndUpdate({ cogUserId: cogUserId }, userData)
 		.exec()
 		.then(async (result) => {
@@ -215,7 +218,7 @@ module.exports.userSetting = (req, res, next) => {
 module.exports.profilePicture = (req, res, next) => {
 	let image;
 	req.file != null ? (image = req.file.path) : null;
-	const cogUserId = req.user.payload.client_id;
+	const cogUserId = req.user.payload.email;
 	Auth.findOne({ cogUserId: cogUserId })
 		.exec()
 		.then(async (result) => {
@@ -241,16 +244,24 @@ module.exports.profilePicture = (req, res, next) => {
 };
 
 module.exports.user = (req, res, next) => {
-	const cogUserId = req.user.payload.client_id;
+	const cogUserId = req.user.payload.email;
 	Auth.findOne({ cogUserId: cogUserId })
 		.then(async (result) => {
-			let data = {...result.toObject()}
-			delete data.cogUserId,
-				res.status(200).json({
-					user: data,
+			// console.log(result)
+			if (result) {
+				let data = { ...result.toObject() };
+				delete data.cogUserId,
+					res.status(200).json({
+						user: data,
+					});
+			} else {
+				res.status(500).json({
+					error: 'Result in null',
 				});
+			}
 		})
 		.catch((err) => {
+			console.log(err);
 			res.status(500).json({
 				error: err,
 			});

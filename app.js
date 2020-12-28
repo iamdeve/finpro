@@ -24,6 +24,9 @@ app.use(`${route}/revenue`, revenuRoute);
 const inputsRoute = require('./routes/inputs');
 app.use(`${route}/inputs`, inputsRoute);
 
+const paymentRoute = require('./routes/payment-method');
+app.use(`${route}/payment`, paymentRoute);
+
 const stripePyament = require('./routes/stripe-subscription');
 app.use(`${route}`, stripePyament);
 
