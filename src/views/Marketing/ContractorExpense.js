@@ -25,11 +25,6 @@ function ExpenseInputs({ marketingId, expenseInputs, setMsg, setErr, setAlertCla
 		setOpen(true);
 	};
 
-	const handleClose = (e) => {
-		e.preventDefault();
-		setOpen(false);
-	};
-
 	const [expenseForm, setExpenseForm] = React.useState({
 		value: '',
 		cost: '',
@@ -42,6 +37,14 @@ function ExpenseInputs({ marketingId, expenseInputs, setMsg, setErr, setAlertCla
 				...prevState,
 				[name]: value,
 			};
+		});
+	};
+	const handleClose = (e) => {
+		e.preventDefault();
+		setOpen(false);
+		setExpenseForm({
+			value: '',
+			cost: '',
 		});
 	};
 

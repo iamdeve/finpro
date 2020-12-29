@@ -20,23 +20,33 @@ function ExpenseInputs({ revenueId, expenseInputs, setMsg, setErr, setAlertClass
 		setOpen(true);
 	};
 
-	const handleClose = (e) => {
-		e.preventDefault();
-		setOpen(false);
-	};
-
 	const handleClickOpen2 = () => {
 		setOpen2(true);
-	};
-
-	const handleClose2 = () => {
-		setOpen2(false);
 	};
 
 	const [expenseForm, setExpenseForm] = React.useState({
 		value: '',
 		cost: '',
 	});
+
+	const handleClose2 = (e) => {
+		e.preventDefault();
+		setOpen2(false);
+		setEdit(false);
+		setExpenseForm({
+			value: '',
+			cost: '',
+		});
+	};
+	const handleClose = (e) => {
+		e.preventDefault();
+		setOpen(false);
+		setEdit(false);
+		setExpenseForm({
+			value: '',
+			cost: '',
+		});
+	};
 
 	const handleRevenueChange = (e) => {
 		const { name, value } = e.target;

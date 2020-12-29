@@ -7,10 +7,11 @@ import { useHistory } from 'react-router-dom';
 import { ButtonGroup, Button } from 'react-bootstrap';
 import { getInputs } from '../../context/fetch-service';
 
+import { getYear, getQuarter, getMonthDetails } from '../../utils/utils';
+
+
 import MarketingInputs from './MarketingInputs';
 import ExpenseInputs from './ExpenseInputs';
-
-import { getYearSum, duplicateCounter, getTotal } from '../../utils/getYearSum';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -130,43 +131,42 @@ function Marketing() {
 							<thead>
 								<tr>
 									<th></th>
-									{duplicateCounter(marketing) &&
-										duplicateCounter(marketing)
-											.splice(-4)
-											.map((year, id) => <th key={id}>{new Date(year.startDate).getFullYear()}</th>)}
+									{chartValue === 'year' && marketing && marketing.inputs && getYear(marketing.inputs).headings.map((year, id) => <th key={id}>{new Date(year.startDate).getFullYear()}</th>)}
+									{chartValue === 'quarter' && marketing && marketing.inputs && getQuarter(marketing.inputs).headings.map((quarter, id) => <th key={id}>{quarter.quarter}</th>)}
+									{chartValue === 'month' && marketing && marketing.inputs && getMonthDetails(marketing.inputs).headings.map((month, id) => <th key={id}>{month.month}</th>)}
 								</tr>
 							</thead>
 							<tbody>
 								<tr>
 									<th>Headcounts</th>
-									{duplicateCounter(marketing) &&
-										duplicateCounter(marketing)
-											.splice(-4)
-											.map((data, id) => <td key={id}>{data.count}</td>)}
+
+									{chartValue === 'year' && marketing && marketing.inputs && getYear(marketing.inputs).headings.map((year, id) => <td key={id}>{year.count}</td>)}
+									{chartValue === 'quarter' && marketing && marketing.inputs && marketing.inputs.length > 0 && getQuarter(marketing.inputs).headings.map((quarter, id) => <td key={id}>{quarter.count}</td>)}
+									{chartValue === 'month' && marketing && marketing.inputs && getMonthDetails(marketing.inputs).headings.map((month, id) => <td key={id}>{month.count}</td>)}
 								</tr>
 								<tr>
 									<th>Salaries</th>
-									{marketing &&
-										marketing.inputs &&
-										Object.keys(getYearSum(marketing.inputs, 'salary'))
-											.splice(-4)
-											.map((data, id) => <td key={id}>${getYearSum(marketing.inputs, 'salary')[data]}</td>)}
+									{chartValue === 'year' && marketing && marketing.inputs && Object.keys(getYear(marketing.inputs).salaries).map((data, id) => <td key={id}>${getYear(marketing.inputs).salaries[data]}</td>)}
+									{chartValue === 'quarter' && marketing && marketing.inputs && marketing.inputs.length > 0 && getQuarter(marketing.inputs) && Object.keys(getQuarter(marketing.inputs).salaries).map((quarter, id) => <td key={id}>${getQuarter(marketing.inputs).salaries[quarter]}</td>)}
+									{chartValue === 'month' && marketing && marketing.inputs && marketing.inputs.length > 0 && getMonthDetails(marketing.inputs) && Object.keys(getMonthDetails(marketing.inputs).salaries).map((month, id) => <td key={id}>${getMonthDetails(marketing.inputs).salaries[month]}</td>)}
 								</tr>
 								<tr>
 									<th>Benifits & Taxes</th>
-									{marketing &&
-										marketing.inputs &&
-										Object.keys(getYearSum(marketing.inputs, 'taxes'))
-											.splice(-4)
-											.map((data, id) => <td key={id}>${getYearSum(marketing.inputs, 'taxes')[data]}</td>)}
+									{chartValue === 'year' && marketing && marketing.inputs && Object.keys(getYear(marketing.inputs).taxes).map((data, id) => <td key={id}>${getYear(marketing.inputs).taxes[data]}</td>)}
+									{chartValue === 'quarter' && marketing && marketing.inputs && marketing.inputs.length > 0 && getQuarter(marketing.inputs) && Object.keys(getQuarter(marketing.inputs).taxes).map((quarter, id) => <td key={id}>${getQuarter(marketing.inputs).taxes[quarter]}</td>)}
+									{chartValue === 'month' && marketing && marketing.inputs && marketing.inputs.length > 0 && getMonthDetails(marketing.inputs) && Object.keys(getMonthDetails(marketing.inputs).taxes).map((month, id) => <td key={id}>${getMonthDetails(marketing.inputs).taxes[month]}</td>)}
 								</tr>
 								<tr>
 									<th>Commissions</th>
-									{marketing && marketing.inputs && Object.keys(getYearSum(marketing.inputs, 'commissions')).map((data, id) => <td key={id}>${getYearSum(marketing.inputs, 'commissions')[data]}</td>)}
+									{chartValue === 'year' && marketing && marketing.inputs && Object.keys(getYear(marketing.inputs).commissions).map((data, id) => <td key={id}>${getYear(marketing.inputs).commissions[data]}</td>)}
+									{chartValue === 'quarter' && marketing && marketing.inputs && marketing.inputs.length > 0 && getQuarter(marketing.inputs) && Object.keys(getQuarter(marketing.inputs).commissions).map((quarter, id) => <td key={id}>${getQuarter(marketing.inputs).commissions[quarter]}</td>)}
+									{chartValue === 'month' && marketing && marketing.inputs && marketing.inputs.length > 0 && getMonthDetails(marketing.inputs) && Object.keys(getMonthDetails(marketing.inputs).commissions).map((month, id) => <td key={id}>${getMonthDetails(marketing.inputs).commissions[month]}</td>)}
 								</tr>
 								<tr>
 									<th>Total Payroll</th>
-									{marketing && marketing.inputs && Object.keys(getTotal(marketing.inputs)).map((data, id) => <td key={id}>${getTotal(marketing.inputs)[data]}</td>)}
+									{chartValue === 'year' && marketing && marketing.inputs && Object.keys(getYear(marketing.inputs).total).map((data, id) => <td key={id}>${getYear(marketing.inputs).total[data]}</td>)}
+									{chartValue === 'quarter' && marketing && marketing.inputs && marketing.inputs.length > 0 && getQuarter(marketing.inputs) && Object.keys(getQuarter(marketing.inputs).total).map((quarter, id) => <td key={id}>${getQuarter(marketing.inputs).total[quarter]}</td>)}
+									{chartValue === 'month' && marketing && marketing.inputs && marketing.inputs.length > 0 && getMonthDetails(marketing.inputs) && Object.keys(getMonthDetails(marketing.inputs).total).map((month, id) => <td key={id}>${getMonthDetails(marketing.inputs).total[month]}</td>)}
 								</tr>
 							</tbody>
 						</table>

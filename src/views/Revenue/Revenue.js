@@ -10,6 +10,7 @@ import { getRevenue } from '../../context/fetch-service';
 
 import RevenueInputs from './RevenueInputs';
 import ExpenseInputs from './ExpenseInputs';
+import numeral from 'numeral';
 import StartingCapitalInput from './StartingCapitalInput';
 
 const useStyles = makeStyles((theme) => ({
@@ -51,14 +52,16 @@ function Revenue() {
 		dispatch,
 	} = React.useContext(AuthContext);
 
-	const [chartValue, setChartValue] = React.useState('year');
-	const handleChange = (event) => {
-		setChartValue(event.target.value);
-	};
-
 	const [msg, setMsg] = React.useState('');
 	const [err, setErr] = React.useState('');
 	const [alertClass, setAlertClass] = React.useState('');
+	const [chartLoader, setChartLoader] = React.useState(true);
+
+	const [chartValue, setChartValue] = React.useState('year');
+	const handleChange = (event) => {
+		setChartLoader(true);
+		setChartValue(event.target.value);
+	};
 
 	const handleCloseAlert = () => {
 		setAlertClass('hide');
@@ -76,9 +79,16 @@ function Revenue() {
 				type: 'SET_REVENUE',
 				payload: revenues,
 			});
+			setTimeout(() => {
+				console.log(revenues);
+				if (revenues && revenues.revenuInputs && revenues.revenuInputs.length > 0) {
+					dispatch({ type: 'VIEW_DATA', payload: chartValue });
+				}
+				setChartLoader(false);
+			}, 1000);
 		}
 		fetchRevenue();
-	}, [isAuthenticated, history, dispatch]);
+	}, [isAuthenticated, history, dispatch, chartValue]);
 
 	return (
 		<div className='container-fluid'>
@@ -124,87 +134,96 @@ function Revenue() {
 							</div>
 						</div>
 						<div className='card-body'>
-							<Bar
-								height={400}
-								data={data}
-								options={{
-									tooltips: {
-										callbacks: {
-											title: function (tooltipItem, data) {
-												return data['labels'][tooltipItem[0]['index']];
+							{chartLoader ? (
+								<div className='loader-wrapper'>
+									<div className='spinner-border spinner-border-sm' role='status'>
+										<span className='sr-only'>Loading...</span>
+									</div>
+								</div>
+							) : (
+								<Bar
+									height={400}
+									data={data}
+									options={{
+										tooltips: {
+											callbacks: {
+												title: function (tooltipItem, data) {
+													return data['labels'][tooltipItem[0]['index']];
+												},
+												label: function (tooltipItem, data) {
+													let value;
+													data['datasets'].forEach((d) => {
+														// console.log(d['data'], tooltipItem);
+														if (d['data'][tooltipItem['index']] === Number(tooltipItem.value)) {
+															value = '$ ' + d['data'][tooltipItem['index']];
+														}
+													});
+													// console.log(value);
+													return value;
+												},
+												afterLabel: function (tooltipItem, data) {},
 											},
-											label: function (tooltipItem, data) {
-												let value;
-												data['datasets'].forEach((d) => {
-													if (d['data'][tooltipItem['index']] === Number(tooltipItem.value)) {
-														value = '$ ' + d['data'][tooltipItem['index']];
-													}
-												});
-												// console.log(value)
-												return value;
-											},
-											afterLabel: function (tooltipItem, data) {},
+											backgroundColor: '#FFF',
+											borderWidth: 2,
+											xPadding: 15,
+											yPadding: 15,
+											borderColor: '#ddd',
+											titleFontSize: 16,
+											titleFontColor: '#0066ff',
+											bodyFontColor: '#000',
+											bodyFontSize: 14,
+											displayColors: false,
 										},
-										backgroundColor: '#FFF',
-										borderWidth: 2,
-										xPadding: 15,
-										yPadding: 15,
-										borderColor: '#ddd',
-										titleFontSize: 16,
-										titleFontColor: '#0066ff',
-										bodyFontColor: '#000',
-										bodyFontSize: 14,
-										displayColors: false,
-									},
-									cornerRadius: 20,
-									responsive: true,
-									maintainAspectRatio: false,
-									scales: {
-										yAxes: [
-											{
-												ticks: {
-													callback: function (value) {
-														return value + '%';
+										cornerRadius: 20,
+										responsive: true,
+										maintainAspectRatio: false,
+										scales: {
+											yAxes: [
+												{
+													ticks: {
+														callback: function (value) {
+															return '$ ' + numeral(value).format('0.0a');
+														},
+														stepSize: 400,
+														beginAtZero: true,
 													},
-													beginAtZero: true,
-													stepSize: 200,
+													gridLines: {
+														borderDash: [2],
+														zeroLineColor: 'transparent',
+														zeroLineWidth: 0,
+														tickMarkLength: 15,
+													},
 												},
-												gridLines: {
-													borderDash: [2],
-													zeroLineColor: 'transparent',
-													zeroLineWidth: 0,
-													tickMarkLength: 15,
+											],
+											xAxes: [
+												{
+													// barThickness: 10,
+													barPercentage: 0.3,
+													gridLines: {
+														lineWidth: 0,
+														zeroLineColor: 'transparent',
+													},
 												},
-											},
-										],
-										xAxes: [
-											{
-												// barThickness: 10,
-												barPercentage: 0.3,
-												gridLines: {
-													lineWidth: 0,
-													zeroLineColor: 'transparent',
-												},
-											},
-										],
-									},
-								}}
-								legend={{
-									display: true,
-									position: 'bottom',
-									labels: {
-										usePointStyle: true,
-										boxWidth: 10,
-									},
-								}}
-							/>
+											],
+										},
+									}}
+									legend={{
+										display: true,
+										position: 'bottom',
+										labels: {
+											usePointStyle: true,
+											boxWidth: 10,
+										},
+									}}
+								/>
+							)}
 						</div>
 					</div>
 				</div>
 
 				<div className='col-8 col-xl-7'>
 					<h4>Revenue Inputs</h4>
-					<RevenueInputs revenues={revenues} setMsg={setMsg} setErr={setErr} setAlertClass={setAlertClass} />
+					<RevenueInputs chartValue={chartValue} revenues={revenues} setMsg={setMsg} setErr={setErr} setAlertClass={setAlertClass} />
 
 					<div className='row'>
 						<div className='col-8 col-xl-8'>

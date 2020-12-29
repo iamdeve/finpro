@@ -17,15 +17,20 @@ function StartingCapitalInput({ revenueId, startingCapital, setMsg, setErr, setA
 		setOpen(true);
 	};
 
-	const handleClose = (e) => {
-		e.preventDefault();
-		setOpen(false);
-	};
-
 	const [startingCapitalForm, setStartingCapitalForm] = React.useState({
 		source: '',
 		amount: '',
 	});
+
+	const handleClose = (e) => {
+		e.preventDefault();
+		setOpen(false);
+		setEdit(false);
+		setStartingCapitalForm({
+			source: '',
+			amount: '',
+		});
+	};
 
 	const handleRevenueChange = (e) => {
 		const { name, value } = e.target;

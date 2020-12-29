@@ -25,17 +25,22 @@ function ExpenseInputs({ marketingId, expenseInputs, setMsg, setErr, setAlertCla
 		setOpen(true);
 	};
 
-	const handleClose = (e) => {
-		e.preventDefault();
-		setOpen(false);
-	};
-
 	const [expenseForm, setExpenseForm] = React.useState({
 		value: '',
 		cost: '',
 		perEmployee: '',
 		date: '',
 	});
+
+	const handleClose = (e) => {
+		e.preventDefault();
+		setOpen(false);
+		setEdit(false);
+		setExpenseForm({
+			value: '',
+			cost: '',
+		});
+	};
 
 	const handleInputChange = (e) => {
 		const { name, value } = e.target;
@@ -245,7 +250,7 @@ function ExpenseInputs({ marketingId, expenseInputs, setMsg, setErr, setAlertCla
 										.map((expInp, id) => (
 											<tr key={id}>
 												<td>{expInp.value}</td>
-												<td>{expInp.cost}</td>
+												<td>${expInp.cost}</td>
 												<td>
 													<span>
 														<i
@@ -299,7 +304,7 @@ function ExpenseInputs({ marketingId, expenseInputs, setMsg, setErr, setAlertCla
 										.map((expInp, id) => (
 											<tr key={id}>
 												<td>{expInp.value}</td>
-												<td>{expInp.cost}</td>
+												<td>${expInp.cost}</td>
 												<td>
 													<span>
 														<i
@@ -355,7 +360,7 @@ function ExpenseInputs({ marketingId, expenseInputs, setMsg, setErr, setAlertCla
 										.map((expInp, id) => (
 											<tr key={id}>
 												<td>{expInp.value}</td>
-												<td>{expInp.cost}</td>
+												<td>${expInp.cost}</td>
 												<td>{expInp.perEmployee}</td>
 												<td>
 													<span>
@@ -416,7 +421,7 @@ function ExpenseInputs({ marketingId, expenseInputs, setMsg, setErr, setAlertCla
 										.map((expInp, id) => (
 											<tr key={id}>
 												<td>{expInp.value}</td>
-												<td>{expInp.cost}</td>
+												<td>${expInp.cost}</td>
 												<td>{expInp.perEmployee}</td>
 												<td>
 													<span>
@@ -475,7 +480,7 @@ function ExpenseInputs({ marketingId, expenseInputs, setMsg, setErr, setAlertCla
 										.map((expInp, id) => (
 											<tr key={id}>
 												<td>{expInp.value}</td>
-												<td>{expInp.cost}</td>
+												<td>${expInp.cost}</td>
 												<td>{expInp.perEmployee}</td>
 												<td>
 													<span>
@@ -535,7 +540,7 @@ function ExpenseInputs({ marketingId, expenseInputs, setMsg, setErr, setAlertCla
 										.map((expInp, id) => (
 											<tr key={id}>
 												<td>{expInp.value}</td>
-												<td>{expInp.cost}</td>
+												<td>${expInp.cost}</td>
 												<td>{expInp.date}</td>
 												<td>
 													<span>

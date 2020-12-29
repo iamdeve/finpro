@@ -10,7 +10,7 @@ import { getInputs } from '../../context/fetch-service';
 import RandDInputs from './RandDInputs';
 import ExpenseInputs from './ExpenseInputs';
 
-import { getYearSum, duplicateCounter, getTotal } from '../../utils/getYearSum';
+import { getYear, getQuarter, getMonthDetails } from '../../utils/utils';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -130,43 +130,42 @@ function RandD() {
 							<thead>
 								<tr>
 									<th></th>
-									{duplicateCounter(randd) &&
-										duplicateCounter(randd)
-											.splice(-4)
-											.map((year, id) => <th key={id}>{new Date(year.startDate).getFullYear()}</th>)}
+									{chartValue === 'year' && randd && randd.inputs && getYear(randd.inputs).headings.map((year, id) => <th key={id}>{new Date(year.startDate).getFullYear()}</th>)}
+									{chartValue === 'quarter' && randd && randd.inputs && getQuarter(randd.inputs).headings.map((quarter, id) => <th key={id}>{quarter.quarter}</th>)}
+									{chartValue === 'month' && randd && randd.inputs && getMonthDetails(randd.inputs).headings.map((month, id) => <th key={id}>{month.month}</th>)}
 								</tr>
 							</thead>
 							<tbody>
 								<tr>
 									<th>Headcounts</th>
-									{duplicateCounter(randd) &&
-										duplicateCounter(randd)
-											.splice(-4)
-											.map((data, id) => <td key={id}>{data.count}</td>)}
+
+									{chartValue === 'year' && randd && randd.inputs && getYear(randd.inputs).headings.map((year, id) => <td key={id}>{year.count}</td>)}
+									{chartValue === 'quarter' && randd && randd.inputs && randd.inputs.length > 0 && getQuarter(randd.inputs).headings.map((quarter, id) => <td key={id}>{quarter.count}</td>)}
+									{chartValue === 'month' && randd && randd.inputs && getMonthDetails(randd.inputs).headings.map((month, id) => <td key={id}>{month.count}</td>)}
 								</tr>
 								<tr>
 									<th>Salaries</th>
-									{randd &&
-										randd.inputs &&
-										Object.keys(getYearSum(randd.inputs, 'salary'))
-											.splice(-4)
-											.map((data, id) => <td key={id}>${getYearSum(randd.inputs, 'salary')[data]}</td>)}
+									{chartValue === 'year' && randd && randd.inputs && Object.keys(getYear(randd.inputs).salaries).map((data, id) => <td key={id}>${getYear(randd.inputs).salaries[data]}</td>)}
+									{chartValue === 'quarter' && randd && randd.inputs && randd.inputs.length > 0 && getQuarter(randd.inputs) && Object.keys(getQuarter(randd.inputs).salaries).map((quarter, id) => <td key={id}>${getQuarter(randd.inputs).salaries[quarter]}</td>)}
+									{chartValue === 'month' && randd && randd.inputs && randd.inputs.length > 0 && getMonthDetails(randd.inputs) && Object.keys(getMonthDetails(randd.inputs).salaries).map((month, id) => <td key={id}>${getMonthDetails(randd.inputs).salaries[month]}</td>)}
 								</tr>
 								<tr>
 									<th>Benifits & Taxes</th>
-									{randd &&
-										randd.inputs &&
-										Object.keys(getYearSum(randd.inputs, 'taxes'))
-											.splice(-4)
-											.map((data, id) => <td key={id}>${getYearSum(randd.inputs, 'taxes')[data]}</td>)}
+									{chartValue === 'year' && randd && randd.inputs && Object.keys(getYear(randd.inputs).taxes).map((data, id) => <td key={id}>${getYear(randd.inputs).taxes[data]}</td>)}
+									{chartValue === 'quarter' && randd && randd.inputs && randd.inputs.length > 0 && getQuarter(randd.inputs) && Object.keys(getQuarter(randd.inputs).taxes).map((quarter, id) => <td key={id}>${getQuarter(randd.inputs).taxes[quarter]}</td>)}
+									{chartValue === 'month' && randd && randd.inputs && randd.inputs.length > 0 && getMonthDetails(randd.inputs) && Object.keys(getMonthDetails(randd.inputs).taxes).map((month, id) => <td key={id}>${getMonthDetails(randd.inputs).taxes[month]}</td>)}
 								</tr>
 								<tr>
 									<th>Commissions</th>
-									{randd && randd.inputs && Object.keys(getYearSum(randd.inputs, 'commissions')).map((data, id) => <td key={id}>${getYearSum(randd.inputs, 'commissions')[data]}</td>)}
+									{chartValue === 'year' && randd && randd.inputs && Object.keys(getYear(randd.inputs).commissions).map((data, id) => <td key={id}>${getYear(randd.inputs).commissions[data]}</td>)}
+									{chartValue === 'quarter' && randd && randd.inputs && randd.inputs.length > 0 && getQuarter(randd.inputs) && Object.keys(getQuarter(randd.inputs).commissions).map((quarter, id) => <td key={id}>${getQuarter(randd.inputs).commissions[quarter]}</td>)}
+									{chartValue === 'month' && randd && randd.inputs && randd.inputs.length > 0 && getMonthDetails(randd.inputs) && Object.keys(getMonthDetails(randd.inputs).commissions).map((month, id) => <td key={id}>${getMonthDetails(randd.inputs).commissions[month]}</td>)}
 								</tr>
 								<tr>
 									<th>Total Payroll</th>
-									{randd && randd.inputs && Object.keys(getTotal(randd.inputs)).map((data, id) => <td key={id}>${getTotal(randd.inputs)[data]}</td>)}
+									{chartValue === 'year' && randd && randd.inputs && Object.keys(getYear(randd.inputs).total).map((data, id) => <td key={id}>${getYear(randd.inputs).total[data]}</td>)}
+									{chartValue === 'quarter' && randd && randd.inputs && randd.inputs.length > 0 && getQuarter(randd.inputs) && Object.keys(getQuarter(randd.inputs).total).map((quarter, id) => <td key={id}>${getQuarter(randd.inputs).total[quarter]}</td>)}
+									{chartValue === 'month' && randd && randd.inputs && randd.inputs.length > 0 && getMonthDetails(randd.inputs) && Object.keys(getMonthDetails(randd.inputs).total).map((month, id) => <td key={id}>${getMonthDetails(randd.inputs).total[month]}</td>)}
 								</tr>
 							</tbody>
 						</table>

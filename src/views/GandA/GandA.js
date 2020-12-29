@@ -11,7 +11,7 @@ import { getInputs } from '../../context/fetch-service';
 import GandAInputs from './GandAInputs';
 import ExpenseInputs from './ExpenseInputs';
 
-import { getYearSum, duplicateCounter, getTotal } from '../../utils/getYearSum';
+import { getYear, getQuarter, getMonthDetails } from '../../utils/utils';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -131,43 +131,42 @@ function GandA() {
 							<thead>
 								<tr>
 									<th></th>
-									{duplicateCounter(ganda) &&
-										duplicateCounter(ganda)
-											.splice(-4)
-											.map((year, id) => <th key={id}>{new Date(year.startDate).getFullYear()}</th>)}
+									{chartValue === 'year' && ganda && ganda.inputs && getYear(ganda.inputs).headings.map((year, id) => <th key={id}>{new Date(year.startDate).getFullYear()}</th>)}
+									{chartValue === 'quarter' && ganda && ganda.inputs && getQuarter(ganda.inputs).headings.map((quarter, id) => <th key={id}>{quarter.quarter}</th>)}
+									{chartValue === 'month' && ganda && ganda.inputs && getMonthDetails(ganda.inputs).headings.map((month, id) => <th key={id}>{month.month}</th>)}
 								</tr>
 							</thead>
 							<tbody>
 								<tr>
 									<th>Headcounts</th>
-									{duplicateCounter(ganda) &&
-										duplicateCounter(ganda)
-											.splice(-4)
-											.map((data, id) => <td key={id}>{data.count}</td>)}
+
+									{chartValue === 'year' && ganda && ganda.inputs && getYear(ganda.inputs).headings.map((year, id) => <td key={id}>{year.count}</td>)}
+									{chartValue === 'quarter' && ganda && ganda.inputs && ganda.inputs.length > 0 && getQuarter(ganda.inputs).headings.map((quarter, id) => <td key={id}>{quarter.count}</td>)}
+									{chartValue === 'month' && ganda && ganda.inputs && getMonthDetails(ganda.inputs).headings.map((month, id) => <td key={id}>{month.count}</td>)}
 								</tr>
 								<tr>
 									<th>Salaries</th>
-									{ganda &&
-										ganda.inputs &&
-										Object.keys(getYearSum(ganda.inputs, 'salary'))
-											.splice(-4)
-											.map((data, id) => <td key={id}>${getYearSum(ganda.inputs, 'salary')[data]}</td>)}
+									{chartValue === 'year' && ganda && ganda.inputs && Object.keys(getYear(ganda.inputs).salaries).map((data, id) => <td key={id}>${getYear(ganda.inputs).salaries[data]}</td>)}
+									{chartValue === 'quarter' && ganda && ganda.inputs && ganda.inputs.length > 0 && getQuarter(ganda.inputs) && Object.keys(getQuarter(ganda.inputs).salaries).map((quarter, id) => <td key={id}>${getQuarter(ganda.inputs).salaries[quarter]}</td>)}
+									{chartValue === 'month' && ganda && ganda.inputs && ganda.inputs.length > 0 && getMonthDetails(ganda.inputs) && Object.keys(getMonthDetails(ganda.inputs).salaries).map((month, id) => <td key={id}>${getMonthDetails(ganda.inputs).salaries[month]}</td>)}
 								</tr>
 								<tr>
 									<th>Benifits & Taxes</th>
-									{ganda &&
-										ganda.inputs &&
-										Object.keys(getYearSum(ganda.inputs, 'taxes'))
-											.splice(-4)
-											.map((data, id) => <td key={id}>${getYearSum(ganda.inputs, 'taxes')[data]}</td>)}
+									{chartValue === 'year' && ganda && ganda.inputs && Object.keys(getYear(ganda.inputs).taxes).map((data, id) => <td key={id}>${getYear(ganda.inputs).taxes[data]}</td>)}
+									{chartValue === 'quarter' && ganda && ganda.inputs && ganda.inputs.length > 0 && getQuarter(ganda.inputs) && Object.keys(getQuarter(ganda.inputs).taxes).map((quarter, id) => <td key={id}>${getQuarter(ganda.inputs).taxes[quarter]}</td>)}
+									{chartValue === 'month' && ganda && ganda.inputs && ganda.inputs.length > 0 && getMonthDetails(ganda.inputs) && Object.keys(getMonthDetails(ganda.inputs).taxes).map((month, id) => <td key={id}>${getMonthDetails(ganda.inputs).taxes[month]}</td>)}
 								</tr>
 								<tr>
 									<th>Commissions</th>
-									{ganda && ganda.inputs && Object.keys(getYearSum(ganda.inputs, 'commissions')).map((data, id) => <td key={id}>${getYearSum(ganda.inputs, 'commissions')[data]}</td>)}
+									{chartValue === 'year' && ganda && ganda.inputs && Object.keys(getYear(ganda.inputs).commissions).map((data, id) => <td key={id}>${getYear(ganda.inputs).commissions[data]}</td>)}
+									{chartValue === 'quarter' && ganda && ganda.inputs && ganda.inputs.length > 0 && getQuarter(ganda.inputs) && Object.keys(getQuarter(ganda.inputs).commissions).map((quarter, id) => <td key={id}>${getQuarter(ganda.inputs).commissions[quarter]}</td>)}
+									{chartValue === 'month' && ganda && ganda.inputs && ganda.inputs.length > 0 && getMonthDetails(ganda.inputs) && Object.keys(getMonthDetails(ganda.inputs).commissions).map((month, id) => <td key={id}>${getMonthDetails(ganda.inputs).commissions[month]}</td>)}
 								</tr>
 								<tr>
 									<th>Total Payroll</th>
-									{ganda && ganda.inputs && Object.keys(getTotal(ganda.inputs)).map((data, id) => <td key={id}>${getTotal(ganda.inputs)[data]}</td>)}
+									{chartValue === 'year' && ganda && ganda.inputs && Object.keys(getYear(ganda.inputs).total).map((data, id) => <td key={id}>${getYear(ganda.inputs).total[data]}</td>)}
+									{chartValue === 'quarter' && ganda && ganda.inputs && ganda.inputs.length > 0 && getQuarter(ganda.inputs) && Object.keys(getQuarter(ganda.inputs).total).map((quarter, id) => <td key={id}>${getQuarter(ganda.inputs).total[quarter]}</td>)}
+									{chartValue === 'month' && ganda && ganda.inputs && ganda.inputs.length > 0 && getMonthDetails(ganda.inputs) && Object.keys(getMonthDetails(ganda.inputs).total).map((month, id) => <td key={id}>${getMonthDetails(ganda.inputs).total[month]}</td>)}
 								</tr>
 							</tbody>
 						</table>

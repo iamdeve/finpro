@@ -1,31 +1,31 @@
 import React from 'react';
-import { LOGIN, LOGOUT, VIEW_DATA, SET_INPUTS, SET_REVENUE, SET_USER } from './types';
-
+import { LOGIN, LOGOUT, SET_INPUTS, SET_REVENUE, SET_USER, VIEW_DATA } from './types';
+import { getYear } from '../utils/chart-utils';
 export const initialState = {
 	isAuthenticated: localStorage.getItem('finProtoken') ? true : false,
 	user: localStorage.getItem('finProUser') ? JSON.parse(localStorage.getItem('finProUser')) : null,
 	token: localStorage.getItem('finProtoken') ? localStorage.getItem('finProtoken') : null,
 	data: {
-		labels: ['2020', '2021', '2022', '2023', '2024', '2025'],
+		labels: ['2021', '2022', '2023', '2024', '2025'],
 		datasets: [
 			{
 				label: 'Silver Plan',
-				data: [25, 20, 30, 22, 17, 10, 18, 26, 28, 26, 20, 32],
+				data: [25, 20, 30, 22],
 				backgroundColor: '#53CA35',
 			},
 			{
 				label: 'Gold Plan',
-				data: [25, 20, 30, 22, 17, 10, 18, 26, 28, 26, 20, 32],
+				data: [25, 20, 30, 22],
 				backgroundColor: '#F14038',
 			},
 			{
 				label: 'Platinum Plan',
-				data: [25, 20, 30, 22, 17, 10, 18, 26, 28, 26, 20, 32],
+				data: [25, 20, 30, 22],
 				backgroundColor: '#4E5AC0',
 			},
 			{
-				label: 'Enter Price Plan',
-				data: [25, 20, 30, 22, 17, 10, 18, 26, 28, 26, 20, 32],
+				label: 'Enterprice Plan',
+				data: [25, 20, 30, 22],
 				backgroundColor: '#9891AF',
 			},
 		],
@@ -97,140 +97,65 @@ export const reducer = (state, action) => {
 				...state,
 				inputs: action.payload,
 			};
-
 		case VIEW_DATA:
-			let updatedData = setData(action.payload.type, action.payload.flag, state);
+			let newData = setData(action.payload, state);
 			return {
 				...state,
-				data: updatedData,
+				data: newData,
 			};
 		default:
 			return state;
 	}
 };
 
-function setData(type, flag, state) {
+function setData(type, state) {
 	switch (type) {
 		case 'year':
 			let yearData;
-			if (flag === 'revenueData') {
-				let ydata = [...state[flag]];
-				let ylabels = ydata.map((r) => new Date(r.date).getFullYear());
-				let yprices = ydata.map((r) => r.price);
-				yearData = { ...state.yearData };
-				yearData.labels = ylabels;
-				yearData.datasets[0] = {
-					...yearData.datasets[0],
-					data: [...yprices],
-				};
-			} else if (flag === 'salesData') {
-				let ydata = [...state[flag]];
-				let ylabels = ydata.map((r) => new Date(r.startDate).getFullYear());
-				let ysalery = ydata.map((r) => r.salery.split(',').join(''));
-				yearData = { ...state.yearData };
-				yearData.labels = ylabels;
-				yearData.datasets[0] = {
-					...yearData.datasets[0],
-					data: [...ysalery],
-				};
-			}
+			let ydata = [...state.revenues.revenuInputs];
+			yearData = { ...state.data };
+			let oneYearData = Object.values(getYear(ydata).total);
+			let secondYeaerData = oneYearData.map((s) => s + (20 / 100) * s);
+			let thirdYeaerData = secondYeaerData.map((s) => s + (20 / 100) * s);
+			let fourthYearData = thirdYeaerData.map((s) => s + (20 / 100) * s);
+			yearData.labels = ['2021', '2022', '2023', '2024', '2025'];
+			yearData.datasets[0].data = oneYearData;
+			yearData.datasets[1].data = secondYeaerData;
+			yearData.datasets[2].data = thirdYeaerData;
+			yearData.datasets[3].data = fourthYearData;
+			console.log(yearData);
 			return yearData;
 		case 'quarter':
 			let quarterData;
-			if (flag === 'revenueData') {
-				let qdata = [...state[flag]];
-				let qprices = getQuarter(qdata, 'date', 'price');
-				quarterData = { ...state.quarterData };
-				quarterData.datasets[0] = {
-					...quarterData.datasets[0],
-					data: [...qprices],
-				};
-			} else if (flag === 'salesData') {
-				let qdata = [...state[flag]];
-				let qprices = getQuarter(qdata, 'startDate', 'salery');
-				quarterData = { ...state.quarterData };
-				quarterData.datasets[0] = {
-					...quarterData.datasets[0],
-					data: [...qprices],
-				};
-			}
+			let qdata = [...state.revenues.revenuInputs];
+			quarterData = { ...state.data };
+			let oneQuarterData = Object.values(getYear(qdata).total);
+			let secondQuarterData = oneQuarterData.map((s) => s + (20 / 100) * s);
+			let thirdQuarterData = secondQuarterData.map((s) => s + (20 / 100) * s);
+			let fourthQuarterData = thirdQuarterData.map((s) => s + (20 / 100) * s);
+			quarterData.labels = ['Jan-Mar', 'Apr-Jun', 'Jul-Sep', 'Oct-Dec'];
+			quarterData.datasets[0].data = oneQuarterData;
+			quarterData.datasets[1].data = secondQuarterData;
+			quarterData.datasets[2].data = thirdQuarterData;
+			quarterData.datasets[3].data = fourthQuarterData;
+			console.log(quarterData);
 			return quarterData;
 		case 'month':
 			let monthData;
-			if (flag === 'revenueData') {
-				let mdata = [...state[flag]];
-				let mlabels = mdata.map((r) => getMonth(new Date(r.date).getMonth() + 1));
-				let mprices = mdata.map((r) => r.price);
-				monthData = { ...state.monthData };
-				monthData.labels = mlabels;
-				monthData.datasets[0] = {
-					...monthData.datasets[0],
-					data: [...mprices],
-				};
-			} else if (flag === 'salesData') {
-				let mdata = [...state[flag]];
-				let mlabels = mdata.map((r) => getMonth(new Date(r.startDate).getMonth() + 1));
-				let msalery = mdata.map((r) => r.salery.split(',').join(''));
-				monthData = { ...state.monthData };
-				monthData.labels = mlabels;
-				monthData.datasets[0] = {
-					...monthData.datasets[0],
-					data: [...msalery],
-				};
-			}
+			let mdata = [...state.revenues.revenuInputs];
+			monthData = { ...state.data };
+			let onemonthData = Object.values(getYear(mdata).total);
+			let secondmonthData = onemonthData.map((s) => s + (20 / 100) * s);
+			let thirdmonthData = secondmonthData.map((s) => s + (20 / 100) * s);
+			let fourthmonthData = thirdmonthData.map((s) => s + (20 / 100) * s);
+			monthData.labels = ['Jan', 'Feb', 'Marc', 'Apr'];
+			monthData.datasets[0].data = onemonthData;
+			monthData.datasets[1].data = secondmonthData;
+			monthData.datasets[2].data = thirdmonthData;
+			monthData.datasets[3].data = fourthmonthData;
+			console.log(monthData);
 			return monthData;
 		default:
 			return;
 	}
-}
-
-export const getMonth = (digit) => {
-	switch (digit) {
-		case 1:
-			return 'Jan';
-		case 2:
-			return 'Feb';
-		case 3:
-			return 'Mar';
-		case 4:
-			return 'Apr';
-		case 5:
-			return 'May';
-		case 6:
-			return 'Jun';
-		case 7:
-			return 'Jul';
-		case 8:
-			return 'Aug';
-		case 9:
-			return 'Sep';
-		case 10:
-			return 'Oct';
-		case 11:
-			return 'Nov';
-		case 12:
-			return 'Dec';
-		default:
-			return;
-	}
-};
-function getQuarter(data, date, value) {
-	let Q1 = [],
-		Q2 = [],
-		Q3 = [],
-		Q4 = [];
-	data.forEach((d) => {
-		if (new Date(d[date]).getMonth() === 0 || new Date(d[date]).getMonth() === 1 || new Date(d[date]).getMonth() === 2) {
-			Q1.push(d.price);
-		} else if (new Date(d[date]).getMonth() === 3 || new Date(d[date]).getMonth() === 4 || new Date(d[date]).getMonth() === 5) {
-			Q2.push(d[value]);
-		} else if (new Date(d[date]).getMonth() === 6 || new Date(d[date]).getMonth() === 7 || new Date(d[date]).getMonth() === 8) {
-			Q3.push(d[value]);
-		} else if (new Date(d[date]).getMonth() === 9 || new Date(d[date]).getMonth() === 10 || new Date(d[date]).getMonth() === 11) {
-			Q4.push(d[value]);
-		}
-	});
-
-	console.log([Q1, Q2, Q3, Q4]);
-	return [Q1, Q2, Q3, Q4];
 }

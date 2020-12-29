@@ -269,3 +269,11 @@ li.nav-item > a.active{
 }
 
 
+.loader-wrapper{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 10rem;
+  background-color: rgba(255,255,255, .47);
+
+}

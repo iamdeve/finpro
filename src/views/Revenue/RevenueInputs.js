@@ -8,7 +8,7 @@ import { AuthContext } from '../../context/context';
 import { getRevenue } from '../../context/fetch-service';
 import moment from 'moment';
 
-function RevenueInputs({ revenues, setMsg, setErr, setAlertClass }) {
+function RevenueInputs({ revenues, setMsg, setErr, setAlertClass, chartValue }) {
 	const { state, dispatch } = React.useContext(AuthContext);
 
 	const [open, setOpen] = React.useState(false);
@@ -19,11 +19,6 @@ function RevenueInputs({ revenues, setMsg, setErr, setAlertClass }) {
 		setOpen(true);
 	};
 
-	const handleClose = (e) => {
-		e.preventDefault();
-		setOpen(false);
-	};
-
 	const [revenueForm, setRevenueForm] = React.useState({
 		plan: '',
 		price: '',
@@ -31,6 +26,19 @@ function RevenueInputs({ revenues, setMsg, setErr, setAlertClass }) {
 		type: 'Yearly',
 		date: '',
 	});
+
+	const handleClose = (e) => {
+		e.preventDefault();
+		setOpen(false);
+		setEdit(false);
+		setRevenueForm({
+			plan: '',
+			price: '',
+			purchasers: '',
+			type: 'Yearly',
+			date: '',
+		});
+	};
 
 	const handleRevenueChange = (e) => {
 		const { name, value } = e.target;
@@ -60,6 +68,7 @@ function RevenueInputs({ revenues, setMsg, setErr, setAlertClass }) {
 					setErr('');
 					setEdit(false);
 					setLoader(false);
+					dispatch({ type: 'VIEW_DATA', payload: chartValue });
 				}
 			} else {
 				let add = await addPlan(revenueForm);
@@ -74,6 +83,7 @@ function RevenueInputs({ revenues, setMsg, setErr, setAlertClass }) {
 					setMsg(add.data.message);
 					setErr('');
 					setLoader(false);
+					dispatch({ type: 'VIEW_DATA', payload: chartValue });
 				}
 			}
 		} catch (err) {
@@ -118,6 +128,7 @@ function RevenueInputs({ revenues, setMsg, setErr, setAlertClass }) {
 				setAlertClass('show');
 				setMsg(deletePlanRes.data.message);
 				setErr('');
+				dispatch({ type: 'VIEW_DATA', payload: chartValue });
 			}
 		} catch (e) {
 			setAlertClass('show');

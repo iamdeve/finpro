@@ -10,7 +10,7 @@ import { getInputs } from '../../context/fetch-service';
 import SalesInputs from './SalesInputs';
 import ExpenseInputs from './ExpenseInputs';
 
-import { getYearSum, duplicateCounter, getTotal } from '../../utils/getYearSum';
+import { getYear, getQuarter, getMonthDetails } from '../../utils/utils';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -72,16 +72,21 @@ function Sales() {
 		if (!isAuthenticated) {
 			history.push('/login');
 		}
-		async function fetchRevenue() {
+		async function fetchInputs() {
 			let inputs = await getInputs();
 			dispatch({
 				type: 'SET_INPUTS',
 				payload: inputs,
 			});
 		}
-		fetchRevenue();
-	}, [isAuthenticated, history, dispatch]);
+		fetchInputs();
+	}, [isAuthenticated, history, dispatch, chartValue]);
 
+	if (sales && sales.inputs) {
+		console.log(getYear(sales.inputs));
+		console.log(getQuarter(sales.inputs));
+		console.log(getMonthDetails(sales.inputs));
+	}
 	return (
 		<div className='container-fluid'>
 			<div className='row'>
@@ -125,35 +130,47 @@ function Sales() {
 							</ButtonGroup>
 						</div>
 					</div>
-
 					<div className='custom-table-container'>
 						<table>
 							<thead>
 								<tr>
 									<th></th>
-									{duplicateCounter(sales) && duplicateCounter(sales).splice(-4).map((year, id) => <th key={id}>{new Date(year.startDate).getFullYear()}</th>)}
+									{chartValue === 'year' && sales && sales.inputs && getYear(sales.inputs).headings.map((year, id) => <th key={id}>{new Date(year.startDate).getFullYear()}</th>)}
+									{chartValue === 'quarter' && sales && sales.inputs && getQuarter(sales.inputs).headings.map((quarter, id) => <th key={id}>{quarter.quarter}</th>)}
+									{chartValue === 'month' && sales && sales.inputs && getMonthDetails(sales.inputs).headings.map((month, id) => <th key={id}>{month.month}</th>)}
 								</tr>
 							</thead>
 							<tbody>
 								<tr>
 									<th>Headcounts</th>
-									{duplicateCounter(sales) && duplicateCounter(sales).splice(-4).map((data, id) => <td key={id}>{data.count}</td>)}
+
+									{chartValue === 'year' && sales && sales.inputs && getYear(sales.inputs).headings.map((year, id) => <td key={id}>{year.count}</td>)}
+									{chartValue === 'quarter' && sales && sales.inputs && sales.inputs.length > 0 && getQuarter(sales.inputs).headings.map((quarter, id) => <td key={id}>{quarter.count}</td>)}
+									{chartValue === 'month' && sales && sales.inputs && getMonthDetails(sales.inputs).headings.map((month, id) => <td key={id}>{month.count}</td>)}
 								</tr>
 								<tr>
 									<th>Salaries</th>
-									{ sales && sales.inputs && Object.keys(getYearSum(sales.inputs, 'salary')).splice(-4).map((data, id) => <td key={id}>${getYearSum(sales.inputs, 'salary')[data]}</td>)}
+									{chartValue === 'year' && sales && sales.inputs && Object.keys(getYear(sales.inputs).salaries).map((data, id) => <td key={id}>${getYear(sales.inputs).salaries[data]}</td>)}
+									{chartValue === 'quarter' && sales && sales.inputs && sales.inputs.length > 0 && getQuarter(sales.inputs) && Object.keys(getQuarter(sales.inputs).salaries).map((quarter, id) => <td key={id}>${getQuarter(sales.inputs).salaries[quarter]}</td>)}
+									{chartValue === 'month' && sales && sales.inputs && sales.inputs.length > 0 && getMonthDetails(sales.inputs) && Object.keys(getMonthDetails(sales.inputs).salaries).map((month, id) => <td key={id}>${getMonthDetails(sales.inputs).salaries[month]}</td>)}
 								</tr>
 								<tr>
 									<th>Benifits & Taxes</th>
-									{ sales && sales.inputs && Object.keys(getYearSum(sales.inputs, 'taxes')).splice(-4).map((data, id) => <td key={id}>${getYearSum(sales.inputs, 'taxes')[data]}</td>)}
+									{chartValue === 'year' && sales && sales.inputs && Object.keys(getYear(sales.inputs).taxes).map((data, id) => <td key={id}>${getYear(sales.inputs).taxes[data]}</td>)}
+									{chartValue === 'quarter' && sales && sales.inputs && sales.inputs.length > 0 && getQuarter(sales.inputs) && Object.keys(getQuarter(sales.inputs).taxes).map((quarter, id) => <td key={id}>${getQuarter(sales.inputs).taxes[quarter]}</td>)}
+									{chartValue === 'month' && sales && sales.inputs && sales.inputs.length > 0 && getMonthDetails(sales.inputs) && Object.keys(getMonthDetails(sales.inputs).taxes).map((month, id) => <td key={id}>${getMonthDetails(sales.inputs).taxes[month]}</td>)}
 								</tr>
 								<tr>
 									<th>Commissions</th>
-									{ sales && sales.inputs && Object.keys(getYearSum(sales.inputs, 'commissions')).map((data, id) => <td key={id}>${getYearSum(sales.inputs, 'commissions')[data]}</td>)}
+									{chartValue === 'year' && sales && sales.inputs && Object.keys(getYear(sales.inputs).commissions).map((data, id) => <td key={id}>${getYear(sales.inputs).commissions[data]}</td>)}
+									{chartValue === 'quarter' && sales && sales.inputs && sales.inputs.length > 0 && getQuarter(sales.inputs) && Object.keys(getQuarter(sales.inputs).commissions).map((quarter, id) => <td key={id}>${getQuarter(sales.inputs).commissions[quarter]}</td>)}
+									{chartValue === 'month' && sales && sales.inputs && sales.inputs.length > 0 && getMonthDetails(sales.inputs) && Object.keys(getMonthDetails(sales.inputs).commissions).map((month, id) => <td key={id}>${getMonthDetails(sales.inputs).commissions[month]}</td>)}
 								</tr>
 								<tr>
 									<th>Total Payroll</th>
-									{ sales && sales.inputs && Object.keys(getTotal(sales.inputs)).map((data, id) => <td key={id}>${getTotal(sales.inputs)[data]}</td>)}
+									{chartValue === 'year' && sales && sales.inputs && Object.keys(getYear(sales.inputs).total).map((data, id) => <td key={id}>${getYear(sales.inputs).total[data]}</td>)}
+									{chartValue === 'quarter' && sales && sales.inputs && sales.inputs.length > 0 && getQuarter(sales.inputs) && Object.keys(getQuarter(sales.inputs).total).map((quarter, id) => <td key={id}>${getQuarter(sales.inputs).total[quarter]}</td>)}
+									{chartValue === 'month' && sales && sales.inputs && sales.inputs.length > 0 && getMonthDetails(sales.inputs) && Object.keys(getMonthDetails(sales.inputs).total).map((month, id) => <td key={id}>${getMonthDetails(sales.inputs).total[month]}</td>)}
 								</tr>
 							</tbody>
 						</table>

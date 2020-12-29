@@ -6,6 +6,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { addInputs, deleteInputs, updateInputs } from '../../context/input-service';
 import { AuthContext } from '../../context/context';
 import { getInputs } from '../../context/fetch-service';
+import { getMonthName } from '../../utils/utils';
 import moment from 'moment';
 
 import ContractExpense from './ContractorExpense';
@@ -21,11 +22,6 @@ function RandDInputs({ randd, setMsg, setErr, setAlertClass }) {
 		setOpen(true);
 	};
 
-	const handleClose = (e) => {
-		e.preventDefault();
-		setOpen(false);
-	};
-
 	const [randdInputsForm, setRanddInputForm] = React.useState({
 		hire: '',
 		startDate: '',
@@ -34,6 +30,20 @@ function RandDInputs({ randd, setMsg, setErr, setAlertClass }) {
 		commissions: '',
 		title: 'randd',
 	});
+
+	const handleClose = (e) => {
+		e.preventDefault();
+		setOpen(false);
+		setEdit(false);
+		setRanddInputForm({
+			hire: '',
+			startDate: '',
+			salary: '',
+			taxes: '',
+			commissions: '',
+			title: 'randd',
+		});
+	};
 
 	const handleRanddInputs = (e) => {
 		const { name, value } = e.target;
@@ -240,10 +250,10 @@ function RandDInputs({ randd, setMsg, setErr, setAlertClass }) {
 									randd.inputs.map((input, id) => (
 										<tr key={id}>
 											<td>{input.hire}</td>
-											<td>{input.startDate}</td>
-											<td>{input.salary}</td>
-											<td>{input.taxes}</td>
-											<td>{input.commissions}</td>
+											<td>{getMonthName(new Date(input.startDate).getMonth() + 1) + ' ' + new Date(input.startDate).getFullYear()}</td>
+											<td>${input.salary}</td>
+											<td>${input.taxes}</td>
+											<td>${input.commissions}</td>
 											<td>
 												<span>
 													<i title='Edit Plan' style={{ cursor: 'pointer' }} className='fe fe-edit edit-icon' onClick={() => handleEditInput(input)}></i>

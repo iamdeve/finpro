@@ -25,17 +25,24 @@ function ExpenseInputs({ gandaId, expenseInputs, setMsg, setErr, setAlertClass }
 		setOpen(true);
 	};
 
-	const handleClose = (e) => {
-		e.preventDefault();
-		setOpen(false);
-	};
-
 	const [expenseForm, setExpenseForm] = React.useState({
 		value: '',
 		cost: '',
 		perEmployee: '',
 		date: '',
 	});
+
+	const handleClose = (e) => {
+		e.preventDefault();
+		setOpen(false);
+		setEdit(false);
+		setExpenseForm({
+			value: '',
+			cost: '',
+			perEmployee: '',
+			date: '',
+		});
+	};
 
 	const handleInputChange = (e) => {
 		const { name, value } = e.target;

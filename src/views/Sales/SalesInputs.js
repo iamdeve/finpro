@@ -6,6 +6,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { addInputs, deleteInputs, updateInputs } from '../../context/input-service';
 import { AuthContext } from '../../context/context';
 import { getInputs } from '../../context/fetch-service';
+import { getMonthName } from '../../utils/utils';
 import moment from 'moment';
 
 import ContractExpense from './ContractorExpense';
@@ -21,11 +22,6 @@ function SalesInputs({ sales, setMsg, setErr, setAlertClass }) {
 		setOpen(true);
 	};
 
-	const handleClose = (e) => {
-		e.preventDefault();
-		setOpen(false);
-	};
-
 	const [salesInputForm, setSalesInputForm] = React.useState({
 		hire: '',
 		startDate: '',
@@ -34,6 +30,20 @@ function SalesInputs({ sales, setMsg, setErr, setAlertClass }) {
 		commissions: '',
 		title: 'sales',
 	});
+
+	const handleClose = (e) => {
+		e.preventDefault();
+		setOpen(false);
+		setEdit(false);
+		setSalesInputForm({
+			hire: '',
+			startDate: '',
+			salary: '',
+			taxes: '',
+			commissions: '',
+			title: 'sales',
+		});
+	};
 
 	const handleSalesChange = (e) => {
 		const { name, value } = e.target;
@@ -240,10 +250,10 @@ function SalesInputs({ sales, setMsg, setErr, setAlertClass }) {
 									sales.inputs.map((input, id) => (
 										<tr key={id}>
 											<td>{input.hire}</td>
-											<td>{input.startDate}</td>
-											<td>{input.salary}</td>
-											<td>{input.taxes}</td>
-											<td>{input.commissions}</td>
+											<td>{getMonthName(new Date(input.startDate).getMonth() + 1) + ' ' + new Date(input.startDate).getFullYear()}</td>
+											<td>${input.salary}</td>
+											<td>${input.taxes}</td>
+											<td>${input.commissions}</td>
 											<td>
 												<span>
 													<i title='Edit Plan' style={{ cursor: 'pointer' }} className='fe fe-edit edit-icon' onClick={() => handleEditInput(input)}></i>
