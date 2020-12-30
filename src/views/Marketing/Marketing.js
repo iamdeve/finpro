@@ -9,6 +9,10 @@ import { getInputs } from '../../context/fetch-service';
 
 import { getYear, getQuarter, getMonthDetails } from '../../utils/utils';
 
+import autoTable from 'jspdf-autotable';
+import { CSVLink } from 'react-csv';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 import MarketingInputs from './MarketingInputs';
 import ExpenseInputs from './ExpenseInputs';
@@ -63,6 +67,8 @@ function Marketing() {
 	const [err, setErr] = React.useState('');
 	const [alertClass, setAlertClass] = React.useState('');
 
+	const [csvData, setCsvData] = React.useState('');
+
 	const handleCloseAlert = () => {
 		setAlertClass('hide');
 		setErr('');
@@ -82,6 +88,141 @@ function Marketing() {
 		}
 		fetchRevenue();
 	}, [isAuthenticated, history, dispatch]);
+
+	const generatePdf = () => {
+		const doc = new jsPDF();
+		autoTable(doc, { html: '#marketing-table', startY: 20 });
+		const date = Date().split(' ');
+		// we use a date string to generate our filename.
+		const dateStr = date[0] + date[1] + date[2] + date[3] + date[4];
+		// ticket title. and margin-top + margin-left
+		doc.text('Next Five Year Data', 14, 15);
+		// we define the name of our PDF file.
+		doc.save(`report_${dateStr}.pdf`);
+	};
+
+	const generateCSV = () => {
+		if (marketing && marketing.inputs && marketing.inputs.length > 0) {
+			let str = '';
+			if (chartValue === 'year') {
+				str +=
+					'Year ,' +
+					getYear(marketing.inputs)
+						.headings.map((year, id) => new Date(year.startDate).getFullYear())
+						.join(',') +
+					',\n';
+				str +=
+					'Headingcount ,' +
+					getYear(marketing.inputs)
+						.headings.map((year, id) => year.count)
+						.join(',') +
+					',\n';
+				str +=
+					'Salaries ,' +
+					Object.values(getYear(marketing.inputs).salaries)
+						.map((salary) => salary)
+						.join(',') +
+					',\n';
+				str +=
+					'Taxes ,' +
+					Object.values(getYear(marketing.inputs).taxes)
+						.map((tax) => tax)
+						.join(',') +
+					',\n';
+				str +=
+					'Commissions ,' +
+					Object.values(getYear(marketing.inputs).commissions)
+						.map((com) => com)
+						.join(',') +
+					',\n';
+				str +=
+					'Total Payroll ,' +
+					Object.values(getYear(marketing.inputs).total)
+						.map((tot) => tot)
+						.join(',') +
+					',\n';
+			} else if (chartValue === 'quarter') {
+				str +=
+					'Quarter ,' +
+					getQuarter(marketing.inputs)
+						.headings.map((quarter, id) => quarter.quarter)
+						.join(',') +
+					',\n';
+				str +=
+					'Headingcount ,' +
+					getQuarter(marketing.inputs)
+						.headings.map((year, id) => year.count)
+						.join(',') +
+					',\n';
+				str +=
+					'Salaries ,' +
+					Object.values(getQuarter(marketing.inputs).salaries)
+						.map((salary) => salary)
+						.join(',') +
+					',\n';
+				str +=
+					'Taxes ,' +
+					Object.values(getQuarter(marketing.inputs).taxes)
+						.map((tax) => tax)
+						.join(',') +
+					',\n';
+				str +=
+					'Commissions ,' +
+					Object.values(getQuarter(marketing.inputs).commissions)
+						.map((com) => com)
+						.join(',') +
+					',\n';
+				str +=
+					'Total Payroll ,' +
+					Object.values(getQuarter(marketing.inputs).total)
+						.map((tot) => tot)
+						.join(',') +
+					',\n';
+			} else if (chartValue === 'month') {
+				str +=
+					'Monthly ,' +
+					getMonthDetails(marketing.inputs)
+						.headings.map((month, id) => month.month)
+						.join(',') +
+					',\n';
+				str +=
+					'Headingcount ,' +
+					getMonthDetails(marketing.inputs)
+						.headings.map((year, id) => year.count)
+						.join(',') +
+					',\n';
+				str +=
+					'Salaries ,' +
+					Object.values(getMonthDetails(marketing.inputs).salaries)
+						.map((salary) => salary)
+						.join(',') +
+					',\n';
+				str +=
+					'Taxes ,' +
+					Object.values(getMonthDetails(marketing.inputs).taxes)
+						.map((tax) => tax)
+						.join(',') +
+					',\n';
+				str +=
+					'Commissions ,' +
+					Object.values(getMonthDetails(marketing.inputs).commissions)
+						.map((com) => com)
+						.join(',') +
+					',\n';
+				str +=
+					'Total Payroll ,' +
+					Object.values(getMonthDetails(marketing.inputs).total)
+						.map((tot) => tot)
+						.join(',') +
+					',\n';
+			}
+
+			console.log(str);
+			setCsvData(str);
+		} else {
+			return;
+		}
+	};
 
 	return (
 		<div className='container-fluid'>
@@ -119,15 +260,25 @@ function Marketing() {
 								</FormControl>
 							</div>
 							<ButtonGroup aria-label='Basic example'>
-								<Button className='btn-custom-group'>Export</Button>
-								<Button className='btn-custom-group'>CSV</Button>
-								<Button className='btn-custom-group'>PDF</Button>
+								<span className='btn-custom-group'>Export</span>
+								<Button onClick={generateCSV} className='btn-custom-group'>
+									{marketing && marketing.inputs ? (
+										<CSVLink className='csv-download-btn' onClick={generateCSV} filename={'data.csv'} data={csvData}>
+											CSV
+										</CSVLink>
+									) : (
+										'CSV'
+									)}
+								</Button>
+								<Button onClick={generatePdf} className='btn-custom-group'>
+									PDF
+								</Button>
 							</ButtonGroup>
 						</div>
 					</div>
 
 					<div className='custom-table-container'>
-						<table>
+						<table id='marketing-table'>
 							<thead>
 								<tr>
 									<th></th>
@@ -147,26 +298,56 @@ function Marketing() {
 								<tr>
 									<th>Salaries</th>
 									{chartValue === 'year' && marketing && marketing.inputs && Object.keys(getYear(marketing.inputs).salaries).map((data, id) => <td key={id}>${getYear(marketing.inputs).salaries[data]}</td>)}
-									{chartValue === 'quarter' && marketing && marketing.inputs && marketing.inputs.length > 0 && getQuarter(marketing.inputs) && Object.keys(getQuarter(marketing.inputs).salaries).map((quarter, id) => <td key={id}>${getQuarter(marketing.inputs).salaries[quarter]}</td>)}
-									{chartValue === 'month' && marketing && marketing.inputs && marketing.inputs.length > 0 && getMonthDetails(marketing.inputs) && Object.keys(getMonthDetails(marketing.inputs).salaries).map((month, id) => <td key={id}>${getMonthDetails(marketing.inputs).salaries[month]}</td>)}
+									{chartValue === 'quarter' &&
+										marketing &&
+										marketing.inputs &&
+										marketing.inputs.length > 0 &&
+										getQuarter(marketing.inputs) &&
+										Object.keys(getQuarter(marketing.inputs).salaries).map((quarter, id) => <td key={id}>${getQuarter(marketing.inputs).salaries[quarter]}</td>)}
+									{chartValue === 'month' &&
+										marketing &&
+										marketing.inputs &&
+										marketing.inputs.length > 0 &&
+										getMonthDetails(marketing.inputs) &&
+										Object.keys(getMonthDetails(marketing.inputs).salaries).map((month, id) => <td key={id}>${getMonthDetails(marketing.inputs).salaries[month]}</td>)}
 								</tr>
 								<tr>
 									<th>Benifits & Taxes</th>
 									{chartValue === 'year' && marketing && marketing.inputs && Object.keys(getYear(marketing.inputs).taxes).map((data, id) => <td key={id}>${getYear(marketing.inputs).taxes[data]}</td>)}
 									{chartValue === 'quarter' && marketing && marketing.inputs && marketing.inputs.length > 0 && getQuarter(marketing.inputs) && Object.keys(getQuarter(marketing.inputs).taxes).map((quarter, id) => <td key={id}>${getQuarter(marketing.inputs).taxes[quarter]}</td>)}
-									{chartValue === 'month' && marketing && marketing.inputs && marketing.inputs.length > 0 && getMonthDetails(marketing.inputs) && Object.keys(getMonthDetails(marketing.inputs).taxes).map((month, id) => <td key={id}>${getMonthDetails(marketing.inputs).taxes[month]}</td>)}
+									{chartValue === 'month' &&
+										marketing &&
+										marketing.inputs &&
+										marketing.inputs.length > 0 &&
+										getMonthDetails(marketing.inputs) &&
+										Object.keys(getMonthDetails(marketing.inputs).taxes).map((month, id) => <td key={id}>${getMonthDetails(marketing.inputs).taxes[month]}</td>)}
 								</tr>
 								<tr>
 									<th>Commissions</th>
 									{chartValue === 'year' && marketing && marketing.inputs && Object.keys(getYear(marketing.inputs).commissions).map((data, id) => <td key={id}>${getYear(marketing.inputs).commissions[data]}</td>)}
-									{chartValue === 'quarter' && marketing && marketing.inputs && marketing.inputs.length > 0 && getQuarter(marketing.inputs) && Object.keys(getQuarter(marketing.inputs).commissions).map((quarter, id) => <td key={id}>${getQuarter(marketing.inputs).commissions[quarter]}</td>)}
-									{chartValue === 'month' && marketing && marketing.inputs && marketing.inputs.length > 0 && getMonthDetails(marketing.inputs) && Object.keys(getMonthDetails(marketing.inputs).commissions).map((month, id) => <td key={id}>${getMonthDetails(marketing.inputs).commissions[month]}</td>)}
+									{chartValue === 'quarter' &&
+										marketing &&
+										marketing.inputs &&
+										marketing.inputs.length > 0 &&
+										getQuarter(marketing.inputs) &&
+										Object.keys(getQuarter(marketing.inputs).commissions).map((quarter, id) => <td key={id}>${getQuarter(marketing.inputs).commissions[quarter]}</td>)}
+									{chartValue === 'month' &&
+										marketing &&
+										marketing.inputs &&
+										marketing.inputs.length > 0 &&
+										getMonthDetails(marketing.inputs) &&
+										Object.keys(getMonthDetails(marketing.inputs).commissions).map((month, id) => <td key={id}>${getMonthDetails(marketing.inputs).commissions[month]}</td>)}
 								</tr>
 								<tr>
 									<th>Total Payroll</th>
 									{chartValue === 'year' && marketing && marketing.inputs && Object.keys(getYear(marketing.inputs).total).map((data, id) => <td key={id}>${getYear(marketing.inputs).total[data]}</td>)}
 									{chartValue === 'quarter' && marketing && marketing.inputs && marketing.inputs.length > 0 && getQuarter(marketing.inputs) && Object.keys(getQuarter(marketing.inputs).total).map((quarter, id) => <td key={id}>${getQuarter(marketing.inputs).total[quarter]}</td>)}
-									{chartValue === 'month' && marketing && marketing.inputs && marketing.inputs.length > 0 && getMonthDetails(marketing.inputs) && Object.keys(getMonthDetails(marketing.inputs).total).map((month, id) => <td key={id}>${getMonthDetails(marketing.inputs).total[month]}</td>)}
+									{chartValue === 'month' &&
+										marketing &&
+										marketing.inputs &&
+										marketing.inputs.length > 0 &&
+										getMonthDetails(marketing.inputs) &&
+										Object.keys(getMonthDetails(marketing.inputs).total).map((month, id) => <td key={id}>${getMonthDetails(marketing.inputs).total[month]}</td>)}
 								</tr>
 							</tbody>
 						</table>

@@ -8,6 +8,10 @@ import { useHistory } from 'react-router-dom';
 import { ButtonGroup, Button } from 'react-bootstrap';
 import { getRevenue } from '../../context/fetch-service';
 
+import { CSVLink } from 'react-csv';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
 import RevenueInputs from './RevenueInputs';
 import ExpenseInputs from './ExpenseInputs';
 import numeral from 'numeral';
@@ -45,8 +49,8 @@ const BootstrapInput = withStyles((theme) => ({
 }))(InputBase);
 
 function Revenue() {
-	const history = useHistory();
 	const classes = useStyles();
+	const history = useHistory();
 	const {
 		state: { revenues, data, isAuthenticated },
 		dispatch,
@@ -80,7 +84,7 @@ function Revenue() {
 				payload: revenues,
 			});
 			setTimeout(() => {
-				console.log(revenues);
+				// console.log(revenues);
 				if (revenues && revenues.revenuInputs && revenues.revenuInputs.length > 0) {
 					dispatch({ type: 'VIEW_DATA', payload: chartValue });
 				}
@@ -89,6 +93,49 @@ function Revenue() {
 		}
 		fetchRevenue();
 	}, [isAuthenticated, history, dispatch, chartValue]);
+
+	const generatePdf = () => {
+		if (revenues && revenues.revenuInputs && revenues.revenuInputs.length > 0) {
+			let type = 'Yearly';
+			if (chartValue === 'quarter') {
+				type = 'Quarter';
+			} else if (chartValue === 'month') {
+				type = 'Monthly';
+			}
+			const doc = new jsPDF();
+
+			// define the columns we want and their titles
+			const tableColumn = ['Id', 'Plan', 'Price', 'Purchasers', 'type'];
+			// define an empty array of rows
+			const tableRows = [];
+			// for each ticket pass all its data into an array
+			revenues.revenuInputs
+				.filter((rev) => rev.type === type)
+				.forEach((reve) => {
+					const reveData = [
+						reve._id,
+						reve.plan,
+						reve.price,
+						reve.purchasers,
+						reve.type,
+						// called date-fns to format the date on the ticket
+						// format(new Date(), 'yyyy-MM-dd'),
+					];
+					// push each tickcet's info into a row
+					tableRows.push(reveData);
+				});
+
+			// startY is basically margin-top
+			doc.autoTable(tableColumn, tableRows, { startY: 20 });
+			const date = Date().split(' ');
+			// we use a date string to generate our filename.
+			const dateStr = date[0] + date[1] + date[2] + date[3] + date[4];
+			// ticket title. and margin-top + margin-left
+			doc.text('Next Five Year Data', 14, 15);
+			// we define the name of our PDF file.
+			doc.save(`report_${dateStr}.pdf`);
+		}
+	};
 
 	return (
 		<div className='container-fluid'>
@@ -127,9 +174,22 @@ function Revenue() {
 									</FormControl>
 								</div>
 								<ButtonGroup aria-label='Basic example'>
-									<Button className='btn-custom-group'>Export</Button>
-									<Button className='btn-custom-group'>CSV</Button>
-									<Button className='btn-custom-group'>PDF</Button>
+									<span className='btn-custom-group'>Export</span>
+									<Button className='btn-custom-group'>
+										{revenues && revenues.revenuInputs ? (
+											<CSVLink
+												className='csv-download-btn'
+												filename={'data.csv'}
+												data={chartValue === 'year' ? revenues.revenuInputs.filter((rev) => rev.type === 'Yearly') : chartValue === 'quarter' ? revenues.revenuInputs.filter((rev) => rev.type === 'Quarter') : revenues.revenuInputs.filter((rev) => rev.type === 'Monthly')}>
+												CSV
+											</CSVLink>
+										) : (
+											'CSV'
+										)}
+									</Button>
+									<Button onClick={generatePdf} className='btn-custom-group'>
+										PDF
+									</Button>
 								</ButtonGroup>
 							</div>
 						</div>
@@ -153,9 +213,9 @@ function Revenue() {
 												label: function (tooltipItem, data) {
 													let value;
 													data['datasets'].forEach((d) => {
-														// console.log(d['data'], tooltipItem);
+														// console.log(d['data'][tooltipItem['index']], tooltipItem);
 														if (d['data'][tooltipItem['index']] === Number(tooltipItem.value)) {
-															value = '$ ' + d['data'][tooltipItem['index']];
+															value = '$ ' + d['data'][tooltipItem['index']].toFixed(2);
 														}
 													});
 													// console.log(value);
@@ -184,7 +244,7 @@ function Revenue() {
 														callback: function (value) {
 															return '$ ' + numeral(value).format('0.0a');
 														},
-														stepSize: 400,
+														stepSize: 200,
 														beginAtZero: true,
 													},
 													gridLines: {
@@ -220,7 +280,6 @@ function Revenue() {
 						</div>
 					</div>
 				</div>
-
 				<div className='col-8 col-xl-7'>
 					<h4>Revenue Inputs</h4>
 					<RevenueInputs chartValue={chartValue} revenues={revenues} setMsg={setMsg} setErr={setErr} setAlertClass={setAlertClass} />

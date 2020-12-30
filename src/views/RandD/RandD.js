@@ -10,6 +10,11 @@ import { getInputs } from '../../context/fetch-service';
 import RandDInputs from './RandDInputs';
 import ExpenseInputs from './ExpenseInputs';
 
+import autoTable from 'jspdf-autotable';
+import { CSVLink } from 'react-csv';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
 import { getYear, getQuarter, getMonthDetails } from '../../utils/utils';
 
 const useStyles = makeStyles((theme) => ({
@@ -61,6 +66,7 @@ function RandD() {
 	const [msg, setMsg] = React.useState('');
 	const [err, setErr] = React.useState('');
 	const [alertClass, setAlertClass] = React.useState('');
+	const [csvData, setCsvData] = React.useState('');
 
 	const handleCloseAlert = () => {
 		setAlertClass('hide');
@@ -81,6 +87,139 @@ function RandD() {
 		}
 		fetchRevenue();
 	}, [isAuthenticated, history, dispatch]);
+
+	const generatePdf = () => {
+		const doc = new jsPDF();
+		autoTable(doc, { html: '#randd-table', startY: 20 });
+		const date = Date().split(' ');
+		// we use a date string to generate our filename.
+		const dateStr = date[0] + date[1] + date[2] + date[3] + date[4];
+		// ticket title. and margin-top + margin-left
+		doc.text('Next Five Year Data', 14, 15);
+		// we define the name of our PDF file.
+		doc.save(`report_${dateStr}.pdf`);
+	};
+
+	const generateCSV = () => {
+		if (randd && randd.inputs && randd.inputs.length > 0) {
+			let str = '';
+			if (chartValue === 'year') {
+				str +=
+					'Year ,' +
+					getYear(randd.inputs)
+						.headings.map((year, id) => new Date(year.startDate).getFullYear())
+						.join(',') +
+					',\n';
+				str +=
+					'Headingcount ,' +
+					getYear(randd.inputs)
+						.headings.map((year, id) => year.count)
+						.join(',') +
+					',\n';
+				str +=
+					'Salaries ,' +
+					Object.values(getYear(randd.inputs).salaries)
+						.map((salary) => salary)
+						.join(',') +
+					',\n';
+				str +=
+					'Taxes ,' +
+					Object.values(getYear(randd.inputs).taxes)
+						.map((tax) => tax)
+						.join(',') +
+					',\n';
+				str +=
+					'Commissions ,' +
+					Object.values(getYear(randd.inputs).commissions)
+						.map((com) => com)
+						.join(',') +
+					',\n';
+				str +=
+					'Total Payroll ,' +
+					Object.values(getYear(randd.inputs).total)
+						.map((tot) => tot)
+						.join(',') +
+					',\n';
+			} else if (chartValue === 'quarter') {
+				str +=
+					'Quarter ,' +
+					getQuarter(randd.inputs)
+						.headings.map((quarter, id) => quarter.quarter)
+						.join(',') +
+					',\n';
+				str +=
+					'Headingcount ,' +
+					getQuarter(randd.inputs)
+						.headings.map((year, id) => year.count)
+						.join(',') +
+					',\n';
+				str +=
+					'Salaries ,' +
+					Object.values(getQuarter(randd.inputs).salaries)
+						.map((salary) => salary)
+						.join(',') +
+					',\n';
+				str +=
+					'Taxes ,' +
+					Object.values(getQuarter(randd.inputs).taxes)
+						.map((tax) => tax)
+						.join(',') +
+					',\n';
+				str +=
+					'Commissions ,' +
+					Object.values(getQuarter(randd.inputs).commissions)
+						.map((com) => com)
+						.join(',') +
+					',\n';
+				str +=
+					'Total Payroll ,' +
+					Object.values(getQuarter(randd.inputs).total)
+						.map((tot) => tot)
+						.join(',') +
+					',\n';
+			} else if (chartValue === 'month') {
+				str +=
+					'Monthly ,' +
+					getMonthDetails(randd.inputs)
+						.headings.map((month, id) => month.month)
+						.join(',') +
+					',\n';
+				str +=
+					'Headingcount ,' +
+					getMonthDetails(randd.inputs)
+						.headings.map((year, id) => year.count)
+						.join(',') +
+					',\n';
+				str +=
+					'Salaries ,' +
+					Object.values(getMonthDetails(randd.inputs).salaries)
+						.map((salary) => salary)
+						.join(',') +
+					',\n';
+				str +=
+					'Taxes ,' +
+					Object.values(getMonthDetails(randd.inputs).taxes)
+						.map((tax) => tax)
+						.join(',') +
+					',\n';
+				str +=
+					'Commissions ,' +
+					Object.values(getMonthDetails(randd.inputs).commissions)
+						.map((com) => com)
+						.join(',') +
+					',\n';
+				str +=
+					'Total Payroll ,' +
+					Object.values(getMonthDetails(randd.inputs).total)
+						.map((tot) => tot)
+						.join(',') +
+					',\n';
+			}
+
+			console.log(str);
+			setCsvData(str);
+		}
+	};
 
 	return (
 		<div className='container-fluid'>
@@ -118,15 +257,25 @@ function RandD() {
 								</FormControl>
 							</div>
 							<ButtonGroup aria-label='Basic example'>
-								<Button className='btn-custom-group'>Export</Button>
-								<Button className='btn-custom-group'>CSV</Button>
-								<Button className='btn-custom-group'>PDF</Button>
+								<span className='btn-custom-group'>Export</span>
+								<Button onClick={generateCSV} className='btn-custom-group'>
+									{randd && randd.inputs ? (
+										<CSVLink className='csv-download-btn' onClick={generateCSV} filename={'data.csv'} data={csvData}>
+											CSV
+										</CSVLink>
+									) : (
+										'CSV'
+									)}
+								</Button>
+								<Button onClick={generatePdf} className='btn-custom-group'>
+									PDF
+								</Button>
 							</ButtonGroup>
 						</div>
 					</div>
 
 					<div className='custom-table-container'>
-						<table>
+						<table id='randd-table'>
 							<thead>
 								<tr>
 									<th></th>

@@ -1,5 +1,5 @@
 export const getYear = (data) => {
-	console.log(data);
+	// console.log(data);
 	if (data) {
 		data = [...data];
 		data.slice(Math.max(data.length - 5, 0));

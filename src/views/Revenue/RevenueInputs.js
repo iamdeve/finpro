@@ -158,7 +158,7 @@ function RevenueInputs({ revenues, setMsg, setErr, setAlertClass, chartValue }) 
 			price: rev.price,
 			purchasers: rev.purchasers,
 			type: rev.type,
-			date: moment(rev.date).format('YYYY-MM-DD'),
+			date: rev.date ? moment(rev.date).format('YYYY-MM-DD') : new Date(),
 			revenueId,
 			revenueInputId,
 		});
@@ -213,6 +213,9 @@ function RevenueInputs({ revenues, setMsg, setErr, setAlertClass, chartValue }) 
 														<select name='type' onChange={handleRevenueChange} className='form-control' id='type' placeholder='Password' required>
 															<option selected={revenueForm.type === 'Yearly'} value='Yearly'>
 																Yearly
+															</option>
+															<option selected={revenueForm.type === 'Quarter'} value='Quarter'>
+																Quarter
 															</option>
 															<option selected={revenueForm.type === 'Monthly'} value='Monthly'>
 																Monthly

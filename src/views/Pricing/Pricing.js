@@ -1,10 +1,171 @@
 import React from 'react';
-
+import { getUserPaymentMethods, getUserPurchasing } from '../../context/fetch-service';
+import { AuthContext } from '../../context/context';
+import { useHistory } from 'react-router-dom';
+import { subscription, cancelSubscription } from '../../context/subscription-service';
 const planlist = ['SaaS business Model', 'Input Variables', 'Charts', 'Reports', '30-days free trial'];
 
 function Pricing() {
+	const history = useHistory();
+	const {
+		state: { billingDetails, purchasing, isAuthenticated },
+		dispatch,
+	} = React.useContext(AuthContext);
+
+	const [alertErrOpen, setAlertErrOpen] = React.useState(false);
+	const [loader, setLoader] = React.useState(false);
+	const [alertClass, setAlertClass] = React.useState('');
+	const [msg, setMsg] = React.useState('');
+	const [err, setErr] = React.useState('');
+	const [open, setOpen] = React.useState(false);
+	const handleClickOpen = () => {
+		setOpen(true);
+	};
+	const handleClose = (e) => {
+		e.preventDefault();
+		setOpen(false);
+	};
+
+	React.useEffect(() => {
+		if (!isAuthenticated) {
+			history.push('/login');
+		}
+		async function fetchRevenue() {
+			let billings = await getUserPaymentMethods();
+			dispatch({
+				type: 'SET_BILLING',
+				payload: billings,
+			});
+			let purchasing = await getUserPurchasing();
+			dispatch({
+				type: 'SET_PURCHASING',
+				payload: purchasing,
+			});
+		}
+		fetchRevenue();
+	}, [isAuthenticated, history, dispatch]);
+
+	const handleCloseAlert = () => {
+		setAlertClass('hide');
+	};
+
+	const giveAlert = () => {
+		setAlertClass('show');
+		setAlertErrOpen('Please add payment details first');
+	};
+
+	const addSubscription = async (e) => {
+		e.preventDefault();
+		setLoader(true);
+		try {
+			let sub = await subscription();
+			if (sub.status === 200 || sub.status === 201) {
+				let billings = await getUserPaymentMethods();
+				dispatch({
+					type: 'SET_BILLING',
+					payload: billings,
+				});
+				let purchasing = await getUserPurchasing();
+				dispatch({
+					type: 'SET_PURCHASING',
+					payload: purchasing,
+				});
+
+				setAlertClass('show');
+				setMsg(sub.data.message);
+				setErr('');
+				setLoader(false);
+			}
+		} catch (err) {
+			setAlertClass('show');
+			setMsg('');
+			console.log(err);
+			if (err.response && err.response.data) {
+				if (err.response.data.error) {
+					if (err.response.data.error && err.response.data.error.raw) {
+						setErr(err.response.data.error.raw.message);
+					} else {
+						setErr(err.response.data.error.message);
+					}
+				} else if (err.response.data.errors) {
+					let errors = err.response.data.errors.map((err) => <li>{err.msg}</li>);
+					setErr(errors);
+				} else {
+					setErr(err.response.data.message);
+				}
+			} else {
+				setErr(err.message);
+			}
+			setLoader(false);
+		}
+	};
+	const cancelUserSubscription = async (e) => {
+		e.preventDefault();
+		setLoader(true);
+		try {
+			let sub = await cancelSubscription();
+			if (sub.status === 200 || sub.status === 201) {
+				let billings = await getUserPaymentMethods();
+				dispatch({
+					type: 'SET_BILLING',
+					payload: billings,
+				});
+				let purchasing = await getUserPurchasing();
+				dispatch({
+					type: 'SET_PURCHASING',
+					payload: purchasing,
+				});
+
+				setAlertClass('show');
+				setMsg(sub.data.message);
+				setErr('');
+				setLoader(false);
+			}
+		} catch (err) {
+			setAlertClass('show');
+			setMsg('');
+			console.log(err);
+			if (err.response && err.response.data) {
+				if (err.response.data.error) {
+					setErr(err.response.data.error.message);
+				} else if (err.response.data.errors) {
+					let errors = err.response.data.errors.map((err) => <li>{err.msg}</li>);
+					setErr(errors);
+				} else {
+					setErr(err.response.data.message);
+				}
+			} else {
+				setErr(err.message);
+			}
+			setLoader(false);
+		}
+	};
 	return (
 		<div className='container'>
+			{alertErrOpen && (
+				<div className={`alert alert-danger alert-dismissible fade ${alertClass}`} role='alert'>
+					<strong>{alertErrOpen}</strong>
+					<button onClick={handleCloseAlert} type='button' className='close' data-dismiss='alert' aria-label='Close'>
+						<span aria-hidden='true'>×</span>
+					</button>
+				</div>
+			)}
+			{msg && (
+				<div className={`alert alert-success alert-dismissible fade ${alertClass}`} role='alert'>
+					<strong>{msg}</strong>
+					<button onClick={handleCloseAlert} type='button' className='close' data-dismiss='alert' aria-label='Close'>
+						<span aria-hidden='true'>×</span>
+					</button>
+				</div>
+			)}
+			{err && (
+				<div className={`alert alert-danger alert-dismissible fade ${alertClass}`} role='alert'>
+					<strong>{err}</strong>
+					<button onClick={handleCloseAlert} type='button' className='close' data-dismiss='alert' aria-label='Close'>
+						<span aria-hidden='true'>×</span>
+					</button>
+				</div>
+			)}
 			<div className='row'>
 				<div className='col-lg-12'>
 					<h1 className='page-headings text-center'>Plan & Pricing</h1>
@@ -43,7 +204,26 @@ function Pricing() {
 
 								<div className='mt-2'></div>
 								<div className='mb-4 text-center'>
-									<button className='btn btn-custom btn-padd'>Select Plan</button>
+									{billingDetails && billingDetails.length > 0 ? (
+										purchasing && purchasing.length > 0 ? (
+											<button onClick={cancelUserSubscription} className='btn btn-custom btn-padd'>
+												Cancel
+											</button>
+										) : (
+											<button onClick={addSubscription} className='btn btn-custom btn-padd'>
+												{loader && (
+													<div className='spinner-border spinner-border-sm' role='status'>
+														<span className='sr-only'>Loading...</span>
+													</div>
+												)}
+												{!loader && 'Subscribe'}
+											</button>
+										)
+									) : (
+										<button onClick={giveAlert} className='btn btn-custom btn-padd'>
+											Select Plan
+										</button>
+									)}
 								</div>
 							</div>
 						</div>

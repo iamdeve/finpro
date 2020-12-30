@@ -73,7 +73,7 @@ function Reports() {
 									<h4 className='card-header-title'>{chartValue}</h4>
 									<div className='chart-handle-grup'>
 										<ButtonGroup aria-label='Basic example'>
-											<Button className='btn-custom-group'>Export</Button>
+											<span className='btn-custom-group'>Export</span>
 											<Button className='btn-custom-group'>CSV</Button>
 											<Button className='btn-custom-group'>PDF</Button>
 										</ButtonGroup>

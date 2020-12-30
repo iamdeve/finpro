@@ -14,6 +14,33 @@ export const getUser = async (token) => {
 			});
 	});
 };
+export const getUserPaymentMethods = async (token) => {
+	return new Promise((resolve, reject) => {
+		axios
+			.get('/payment/userPayment')
+			.then((payment) => {
+				resolve(payment.data.paymentMethods);
+			})
+			.catch((err) => {
+				console.log(err);
+				reject(err);
+			});
+	});
+};
+
+export const getUserPurchasing = async () => {
+	return new Promise((resolve, reject) => {
+		axios
+			.get('/purchasing/userPurchasing')
+			.then((purchasing) => {
+				resolve(purchasing.data.purchasing);
+			})
+			.catch((err) => {
+				console.log(err);
+				reject(err);
+			});
+	});
+};
 
 export const getRevenue = async () => {
 	return new Promise((resolve, reject) => {
