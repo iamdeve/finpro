@@ -12,6 +12,10 @@ const paymentMethodSchema = new mongoose.Schema({
 		type: Object,
 		require: true,
 	},
+	card: {
+		type: Object,
+		require: true,
+	},
 	status: {
 		type: String,
 		required: true,

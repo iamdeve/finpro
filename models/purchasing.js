@@ -8,14 +8,32 @@ const purchasingSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	planName: {
+		type: String,
+		required: true,
+	},
 	planId: {
+		type: String,
+		require: true,
+	},
+	planType: {
+		type: String,
+		require: true,
+	},
+	status: {
 		type: String,
 		require: true,
 	},
 	purchaseDate: {
 		type: String,
 		required: true,
-	}
+	},
+	subscriptionDetails: {
+		type: Object,
+	},
+	customerDetails: {
+		type: Object,
+	},
 });
 
 module.exports = mongoose.model('Purchasing', purchasingSchema);

@@ -44,10 +44,17 @@ module.exports.addMethod = async (req, res, next) => {
 				cvc: cvc,
 			},
 		});
+
 		const createPayment = new PaymentMethod({
 			_id: mongoose.Types.ObjectId(),
 			userId: userCogId,
 			paymentMethod: methods,
+			card: {
+				number: number || '4242424242424242',
+				exp_month: exp_month,
+				exp_year: exp_year,
+				cvc: cvc,
+			},
 			status: 'active',
 			type: 'default',
 		});
@@ -63,6 +70,21 @@ module.exports.addMethod = async (req, res, next) => {
 					error: err,
 				});
 			});
+		PaymentMethod.find({ userId: userCogId }).then((result) => {
+			if (result && result.length > 0) {
+				for (let i = 0; i < result.length; i++) {
+					result[i].type = 'secondary';
+					result[i]
+						.save()
+						.then(() => {
+							console.log('save');
+						})
+						.catch((err) => {
+							console.log(err);
+						});
+				}
+			}
+		});
 	} catch (err) {
 		console.log(`final error ${err}`);
 		res.status(500).json({
@@ -91,6 +113,22 @@ module.exports.delete = async (req, res, next) => {
 };
 
 module.exports.update = (req, res, next) => {};
+
+module.exports.userPayment = (req, res, next) => {
+	const userCogId = req.user.payload.email;
+
+	PaymentMethod.find({ userId: userCogId })
+		.exec()
+		.then(async (result) => {
+			return res.status(200).json({ paymentMethods: result });
+		})
+		.catch((err) => {
+			console.log(`final error ${err}`);
+			res.status(500).json({
+				error: err,
+			});
+		});
+};
 
 module.exports.status = async (req, res, next) => {
 	if (req.params.id === null || req.params.id === undefined || req.params.id === '') {
