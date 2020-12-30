@@ -449,7 +449,7 @@ function Billing() {
 									invoices.length > 0 &&
 									invoices.map((inv, id) => (
 										<tr key={id}>
-											<td>{new Date(inv.created * 1000).getDate() + '/' + new Date(inv.created * 1000).getMonth() + 1 + '/' + new Date(inv.created * 1000).getFullYear()}</td>
+											<td>{new Date(inv.created * 1000).getDate() + '/' + (new Date(inv.created * 1000).getMonth() + 1) + '/' + new Date(inv.created * 1000).getFullYear()}</td>
 
 											<td>Intro</td>
 											<td>$19.00</td>
