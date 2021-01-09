@@ -1,9 +1,9 @@
 import axios from './axios';
 
-export const subscription = async () => {
+export const subscription = async (startTrial) => {
 	return new Promise((resolve, reject) => {
 		axios
-			.post('/subscription')
+			.post('/subscription', { startTrial })
 			.then((rev) => {
 				resolve(rev);
 			})

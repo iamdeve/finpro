@@ -39,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
 		// backgroundColor: theme.palette.background.default,
 		padding: theme.spacing(3),
 		paddingTop: '80px',
+		overflow: 'hidden',
 	},
 	TopNav: {
 		width: '100%',

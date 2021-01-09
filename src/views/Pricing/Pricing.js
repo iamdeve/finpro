@@ -8,12 +8,13 @@ const planlist = ['SaaS business Model', 'Input Variables', 'Charts', 'Reports',
 function Pricing() {
 	const history = useHistory();
 	const {
-		state: { billingDetails, purchasing, isAuthenticated },
+		state: { user, billingDetails, purchasing, isAuthenticated },
 		dispatch,
 	} = React.useContext(AuthContext);
 
 	const [alertErrOpen, setAlertErrOpen] = React.useState(false);
 	const [loader, setLoader] = React.useState(false);
+	const [loaderFor, setLoaderFor] = React.useState('');
 	const [alertClass, setAlertClass] = React.useState('');
 	const [msg, setMsg] = React.useState('');
 	const [err, setErr] = React.useState('');
@@ -54,11 +55,12 @@ function Pricing() {
 		setAlertErrOpen('Please add payment details first');
 	};
 
-	const addSubscription = async (e) => {
+	const addSubscription = async (e, startTrial) => {
 		e.preventDefault();
+		setLoaderFor(startTrial ? 'trial' : 'sub');
 		setLoader(true);
 		try {
-			let sub = await subscription();
+			let sub = await subscription(startTrial);
 			if (sub.status === 200 || sub.status === 201) {
 				let billings = await getUserPaymentMethods();
 				dispatch({
@@ -75,6 +77,7 @@ function Pricing() {
 				setMsg(sub.data.message);
 				setErr('');
 				setLoader(false);
+				setLoaderFor('');
 			}
 		} catch (err) {
 			setAlertClass('show');
@@ -97,6 +100,7 @@ function Pricing() {
 				setErr(err.message);
 			}
 			setLoader(false);
+			setLoaderFor('');
 		}
 	};
 	const cancelUserSubscription = async (e) => {
@@ -120,6 +124,7 @@ function Pricing() {
 				setMsg(sub.data.message);
 				setErr('');
 				setLoader(false);
+				setLoaderFor('');
 			}
 		} catch (err) {
 			setAlertClass('show');
@@ -138,6 +143,7 @@ function Pricing() {
 				setErr(err.message);
 			}
 			setLoader(false);
+			setLoaderFor('');
 		}
 	};
 	return (
@@ -210,19 +216,39 @@ function Pricing() {
 												Cancel
 											</button>
 										) : (
-											<button onClick={addSubscription} className='btn btn-custom btn-padd'>
-												{loader && (
+											<>
+												<button onClick={(e) => addSubscription(e)} className='btn btn-custom btn-padd'>
+													{loaderFor === 'sub' && (
+														<div className='spinner-border spinner-border-sm' role='status'>
+															<span className='sr-only'>Loading...</span>
+														</div>
+													)}
+													{(loaderFor === '' || loaderFor === 'trial') && 'Subscribe'}
+												</button>
+												<button onClick={(e) => addSubscription(e, 'startTrial')} className='btn btn-custom btn-padd'>
+													{loaderFor === 'trial' && (
+														<div className='spinner-border spinner-border-sm' role='status'>
+															<span className='sr-only'>Loading...</span>
+														</div>
+													)}
+													{(loaderFor === '' || loaderFor === 'sub') && 'Start Trial'}
+												</button>
+											</>
+										)
+									) : (
+										<>
+											<button onClick={giveAlert} className='btn btn-custom btn-padd'>
+												Select Plan
+											</button>
+											<button onClick={(e) => addSubscription(e, 'startTrial')} className='btn btn-custom btn-padd'>
+												{loaderFor === 'trial' && (
 													<div className='spinner-border spinner-border-sm' role='status'>
 														<span className='sr-only'>Loading...</span>
 													</div>
 												)}
-												{!loader && 'Subscribe'}
+												{(loaderFor === '' || loaderFor === 'sub') && 'Start Trial'}
 											</button>
-										)
-									) : (
-										<button onClick={giveAlert} className='btn btn-custom btn-padd'>
-											Select Plan
-										</button>
+										</>
 									)}
 								</div>
 							</div>

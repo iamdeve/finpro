@@ -218,7 +218,7 @@ function ExpenseInputs({ salesId, expenseInputs, setMsg, setErr, setAlertClass }
 										.map((expInp, id) => (
 											<tr key={id}>
 												<td>{expInp.value}</td>
-												<td>{expInp.cost}</td>
+												<td>${expInp.cost}</td>
 												<td>
 													<span>
 														<i

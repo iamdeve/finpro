@@ -52,9 +52,11 @@ function RandD() {
 	const history = useHistory();
 	const classes = useStyles();
 	const {
-		state: { inputs, isAuthenticated },
+		state: { purchasing, inputs, isAuthenticated },
 		dispatch,
 	} = React.useContext(AuthContext);
+
+	const userSub = purchasing && purchasing.length > 0 ? purchasing.filter((sub) => sub.status === 'active' || sub.status === 'trial') : [];
 
 	const randd = inputs.filter((i) => i.title === 'randd')[0];
 
@@ -65,7 +67,7 @@ function RandD() {
 
 	const [msg, setMsg] = React.useState('');
 	const [err, setErr] = React.useState('');
-	const [alertClass, setAlertClass] = React.useState('');
+	const [alertClass, setAlertClass] = React.useState(userSub && userSub.length > 0 ? '' : 'show');
 	const [csvData, setCsvData] = React.useState('');
 
 	const handleCloseAlert = () => {
@@ -221,7 +223,7 @@ function RandD() {
 		}
 	};
 
-	return (
+	return userSub && userSub.length > 0 ? (
 		<div className='container-fluid'>
 			<div className='row'>
 				<div className='col-12 col-xl-12'>
@@ -294,27 +296,32 @@ function RandD() {
 								</tr>
 								<tr>
 									<th>Salaries</th>
-									{chartValue === 'year' && randd && randd.inputs && Object.keys(getYear(randd.inputs).salaries).map((data, id) => <td key={id}>${getYear(randd.inputs).salaries[data]}</td>)}
-									{chartValue === 'quarter' && randd && randd.inputs && randd.inputs.length > 0 && getQuarter(randd.inputs) && Object.keys(getQuarter(randd.inputs).salaries).map((quarter, id) => <td key={id}>${getQuarter(randd.inputs).salaries[quarter]}</td>)}
-									{chartValue === 'month' && randd && randd.inputs && randd.inputs.length > 0 && getMonthDetails(randd.inputs) && Object.keys(getMonthDetails(randd.inputs).salaries).map((month, id) => <td key={id}>${getMonthDetails(randd.inputs).salaries[month]}</td>)}
+									{chartValue === 'year' && randd && randd.inputs && Object.keys(getYear(randd.inputs).salaries).map((data, id) => <td key={id}>${getYear(randd.inputs).salaries[data].toFixed(2)}</td>)}
+									{chartValue === 'quarter' && randd && randd.inputs && randd.inputs.length > 0 && getQuarter(randd.inputs) && Object.keys(getQuarter(randd.inputs).salaries).map((quarter, id) => <td key={id}>${getQuarter(randd.inputs).salaries[quarter].toFixed(2)}</td>)}
+									{chartValue === 'month' && randd && randd.inputs && randd.inputs.length > 0 && getMonthDetails(randd.inputs) && Object.keys(getMonthDetails(randd.inputs).salaries).map((month, id) => <td key={id}>${getMonthDetails(randd.inputs).salaries[month].toFixed(2)}</td>)}
 								</tr>
 								<tr>
 									<th>Benifits & Taxes</th>
-									{chartValue === 'year' && randd && randd.inputs && Object.keys(getYear(randd.inputs).taxes).map((data, id) => <td key={id}>${getYear(randd.inputs).taxes[data]}</td>)}
-									{chartValue === 'quarter' && randd && randd.inputs && randd.inputs.length > 0 && getQuarter(randd.inputs) && Object.keys(getQuarter(randd.inputs).taxes).map((quarter, id) => <td key={id}>${getQuarter(randd.inputs).taxes[quarter]}</td>)}
-									{chartValue === 'month' && randd && randd.inputs && randd.inputs.length > 0 && getMonthDetails(randd.inputs) && Object.keys(getMonthDetails(randd.inputs).taxes).map((month, id) => <td key={id}>${getMonthDetails(randd.inputs).taxes[month]}</td>)}
+									{chartValue === 'year' && randd && randd.inputs && Object.keys(getYear(randd.inputs).taxes).map((data, id) => <td key={id}>${getYear(randd.inputs).taxes[data].toFixed(2)}</td>)}
+									{chartValue === 'quarter' && randd && randd.inputs && randd.inputs.length > 0 && getQuarter(randd.inputs) && Object.keys(getQuarter(randd.inputs).taxes).map((quarter, id) => <td key={id}>${getQuarter(randd.inputs).taxes[quarter].toFixed(2)}</td>)}
+									{chartValue === 'month' && randd && randd.inputs && randd.inputs.length > 0 && getMonthDetails(randd.inputs) && Object.keys(getMonthDetails(randd.inputs).taxes).map((month, id) => <td key={id}>${getMonthDetails(randd.inputs).taxes[month].toFixed(2)}</td>)}
 								</tr>
 								<tr>
 									<th>Commissions</th>
-									{chartValue === 'year' && randd && randd.inputs && Object.keys(getYear(randd.inputs).commissions).map((data, id) => <td key={id}>${getYear(randd.inputs).commissions[data]}</td>)}
-									{chartValue === 'quarter' && randd && randd.inputs && randd.inputs.length > 0 && getQuarter(randd.inputs) && Object.keys(getQuarter(randd.inputs).commissions).map((quarter, id) => <td key={id}>${getQuarter(randd.inputs).commissions[quarter]}</td>)}
-									{chartValue === 'month' && randd && randd.inputs && randd.inputs.length > 0 && getMonthDetails(randd.inputs) && Object.keys(getMonthDetails(randd.inputs).commissions).map((month, id) => <td key={id}>${getMonthDetails(randd.inputs).commissions[month]}</td>)}
+									{chartValue === 'year' && randd && randd.inputs && Object.keys(getYear(randd.inputs).commissions).map((data, id) => <td key={id}>${getYear(randd.inputs).commissions[data].toFixed(2)}</td>)}
+									{chartValue === 'quarter' && randd && randd.inputs && randd.inputs.length > 0 && getQuarter(randd.inputs) && Object.keys(getQuarter(randd.inputs).commissions).map((quarter, id) => <td key={id}>${getQuarter(randd.inputs).commissions[quarter].toFixed(2)}</td>)}
+									{chartValue === 'month' &&
+										randd &&
+										randd.inputs &&
+										randd.inputs.length > 0 &&
+										getMonthDetails(randd.inputs) &&
+										Object.keys(getMonthDetails(randd.inputs).commissions).map((month, id) => <td key={id}>${getMonthDetails(randd.inputs).commissions[month].toFixed(2)}</td>)}
 								</tr>
 								<tr>
 									<th>Total Payroll</th>
-									{chartValue === 'year' && randd && randd.inputs && Object.keys(getYear(randd.inputs).total).map((data, id) => <td key={id}>${getYear(randd.inputs).total[data]}</td>)}
-									{chartValue === 'quarter' && randd && randd.inputs && randd.inputs.length > 0 && getQuarter(randd.inputs) && Object.keys(getQuarter(randd.inputs).total).map((quarter, id) => <td key={id}>${getQuarter(randd.inputs).total[quarter]}</td>)}
-									{chartValue === 'month' && randd && randd.inputs && randd.inputs.length > 0 && getMonthDetails(randd.inputs) && Object.keys(getMonthDetails(randd.inputs).total).map((month, id) => <td key={id}>${getMonthDetails(randd.inputs).total[month]}</td>)}
+									{chartValue === 'year' && randd && randd.inputs && Object.keys(getYear(randd.inputs).total).map((data, id) => <td key={id}>${getYear(randd.inputs).total[data].toFixed(2)}</td>)}
+									{chartValue === 'quarter' && randd && randd.inputs && randd.inputs.length > 0 && getQuarter(randd.inputs) && Object.keys(getQuarter(randd.inputs).total).map((quarter, id) => <td key={id}>${getQuarter(randd.inputs).total[quarter].toFixed(2)}</td>)}
+									{chartValue === 'month' && randd && randd.inputs && randd.inputs.length > 0 && getMonthDetails(randd.inputs) && Object.keys(getMonthDetails(randd.inputs).total).map((month, id) => <td key={id}>${getMonthDetails(randd.inputs).total[month].toFixed(2)}</td>)}
 								</tr>
 							</tbody>
 						</table>
@@ -330,6 +337,13 @@ function RandD() {
 					{randd && randd._id && <ExpenseInputs randdId={randd._id} expenseInputs={randd.majorExpenseInput} setMsg={setMsg} setErr={setErr} setAlertClass={setAlertClass} />}
 				</div>
 			</div>
+		</div>
+	) : (
+		<div className={`alert alert-success alert-dismissible fade ${alertClass}`} role='alert'>
+			<strong>Please subscribe our product to use the app</strong>
+			<button onClick={handleCloseAlert} type='button' className='close' data-dismiss='alert' aria-label='Close'>
+				<span aria-hidden='true'>×</span>
+			</button>
 		</div>
 	);
 }

@@ -52,12 +52,12 @@ function Sales() {
 	const history = useHistory();
 	const classes = useStyles();
 	const {
-		state: { inputs, isAuthenticated },
+		state: { purchasing, inputs, isAuthenticated },
 		dispatch,
 	} = React.useContext(AuthContext);
 
 	const sales = inputs.filter((i) => i.title === 'sales')[0];
-
+	const userSub = purchasing && purchasing.length > 0 ? purchasing.filter((sub) => sub.status === 'active' || sub.status === 'trial') : [];
 	const [chartValue, setChartValue] = React.useState('year');
 	const handleChange = (event) => {
 		setChartValue(event.target.value);
@@ -66,7 +66,7 @@ function Sales() {
 	const [csvData, setCsvData] = React.useState('');
 	const [msg, setMsg] = React.useState('');
 	const [err, setErr] = React.useState('');
-	const [alertClass, setAlertClass] = React.useState('');
+	const [alertClass, setAlertClass] = React.useState(userSub && userSub.length > 0 ? '' : 'show');
 
 	const handleCloseAlert = () => {
 		setAlertClass('hide');
@@ -89,9 +89,9 @@ function Sales() {
 	}, [isAuthenticated, history, dispatch, chartValue]);
 
 	if (sales && sales.inputs) {
-		console.log(getYear(sales.inputs));
-		console.log(getQuarter(sales.inputs));
-		console.log(getMonthDetails(sales.inputs));
+		// console.log(getYear(sales.inputs));
+		// console.log(getQuarter(sales.inputs));
+		// console.log(getMonthDetails(sales.inputs));
 	}
 	const generatePdf = () => {
 		const doc = new jsPDF();
@@ -223,7 +223,7 @@ function Sales() {
 		console.log(str);
 		setCsvData(str);
 	};
-	return (
+	return userSub && userSub.length > 0 ? (
 		<div className='container-fluid'>
 			<div className='row'>
 				<div className='col-12 col-xl-12'>
@@ -277,7 +277,7 @@ function Sales() {
 						</div>
 					</div>
 					<div className='custom-table-container'>
-						<table id='sales-table'>
+						<table id='sales-table' className='table table-nowrap'>
 							<thead>
 								<tr>
 									<th></th>
@@ -296,27 +296,33 @@ function Sales() {
 								</tr>
 								<tr>
 									<th>Salaries</th>
-									{chartValue === 'year' && sales && sales.inputs && Object.keys(getYear(sales.inputs).salaries).map((data, id) => <td key={id}>${getYear(sales.inputs).salaries[data]}</td>)}
-									{chartValue === 'quarter' && sales && sales.inputs && sales.inputs.length > 0 && getQuarter(sales.inputs) && Object.keys(getQuarter(sales.inputs).salaries).map((quarter, id) => <td key={id}>${getQuarter(sales.inputs).salaries[quarter]}</td>)}
-									{chartValue === 'month' && sales && sales.inputs && sales.inputs.length > 0 && getMonthDetails(sales.inputs) && Object.keys(getMonthDetails(sales.inputs).salaries).map((month, id) => <td key={id}>${getMonthDetails(sales.inputs).salaries[month]}</td>)}
+
+									{chartValue === 'year' && sales && sales.inputs && Object.keys(getYear(sales.inputs).salaries).map((data, id) => <td key={id}>${getYear(sales.inputs).salaries[data].toFixed(2)}</td>)}
+									{chartValue === 'quarter' && sales && sales.inputs && sales.inputs.length > 0 && getQuarter(sales.inputs) && Object.keys(getQuarter(sales.inputs).salaries).map((quarter, id) => <td key={id}>${getQuarter(sales.inputs).salaries[quarter].toFixed(2)}</td>)}
+									{chartValue === 'month' && sales && sales.inputs && sales.inputs.length > 0 && getMonthDetails(sales.inputs) && Object.keys(getMonthDetails(sales.inputs).salaries).map((month, id) => <td key={id}>${getMonthDetails(sales.inputs).salaries[month].toFixed(2)}</td>)}
 								</tr>
 								<tr>
 									<th>Benifits & Taxes</th>
-									{chartValue === 'year' && sales && sales.inputs && Object.keys(getYear(sales.inputs).taxes).map((data, id) => <td key={id}>${getYear(sales.inputs).taxes[data]}</td>)}
-									{chartValue === 'quarter' && sales && sales.inputs && sales.inputs.length > 0 && getQuarter(sales.inputs) && Object.keys(getQuarter(sales.inputs).taxes).map((quarter, id) => <td key={id}>${getQuarter(sales.inputs).taxes[quarter]}</td>)}
-									{chartValue === 'month' && sales && sales.inputs && sales.inputs.length > 0 && getMonthDetails(sales.inputs) && Object.keys(getMonthDetails(sales.inputs).taxes).map((month, id) => <td key={id}>${getMonthDetails(sales.inputs).taxes[month]}</td>)}
+									{chartValue === 'year' && sales && sales.inputs && Object.keys(getYear(sales.inputs).taxes).map((data, id) => <td key={id}>${getYear(sales.inputs).taxes[data].toFixed(2)}</td>)}
+									{chartValue === 'quarter' && sales && sales.inputs && sales.inputs.length > 0 && getQuarter(sales.inputs) && Object.keys(getQuarter(sales.inputs).taxes).map((quarter, id) => <td key={id}>${getQuarter(sales.inputs).taxes[quarter].toFixed(2)}</td>)}
+									{chartValue === 'month' && sales && sales.inputs && sales.inputs.length > 0 && getMonthDetails(sales.inputs) && Object.keys(getMonthDetails(sales.inputs).taxes).map((month, id) => <td key={id}>${getMonthDetails(sales.inputs).taxes[month].toFixed(2)}</td>)}
 								</tr>
 								<tr>
 									<th>Commissions</th>
-									{chartValue === 'year' && sales && sales.inputs && Object.keys(getYear(sales.inputs).commissions).map((data, id) => <td key={id}>${getYear(sales.inputs).commissions[data]}</td>)}
-									{chartValue === 'quarter' && sales && sales.inputs && sales.inputs.length > 0 && getQuarter(sales.inputs) && Object.keys(getQuarter(sales.inputs).commissions).map((quarter, id) => <td key={id}>${getQuarter(sales.inputs).commissions[quarter]}</td>)}
-									{chartValue === 'month' && sales && sales.inputs && sales.inputs.length > 0 && getMonthDetails(sales.inputs) && Object.keys(getMonthDetails(sales.inputs).commissions).map((month, id) => <td key={id}>${getMonthDetails(sales.inputs).commissions[month]}</td>)}
+									{chartValue === 'year' && sales && sales.inputs && Object.keys(getYear(sales.inputs).commissions).map((data, id) => <td key={id}>${getYear(sales.inputs).commissions[data].toFixed(2)}</td>)}
+									{chartValue === 'quarter' && sales && sales.inputs && sales.inputs.length > 0 && getQuarter(sales.inputs) && Object.keys(getQuarter(sales.inputs).commissions).map((quarter, id) => <td key={id}>${getQuarter(sales.inputs).commissions[quarter].toFixed(2)}</td>)}
+									{chartValue === 'month' &&
+										sales &&
+										sales.inputs &&
+										sales.inputs.length > 0 &&
+										getMonthDetails(sales.inputs) &&
+										Object.keys(getMonthDetails(sales.inputs).commissions).map((month, id) => <td key={id}>${getMonthDetails(sales.inputs).commissions[month].toFixed(2)}</td>)}
 								</tr>
 								<tr>
 									<th>Total Payroll</th>
-									{chartValue === 'year' && sales && sales.inputs && Object.keys(getYear(sales.inputs).total).map((data, id) => <td key={id}>${getYear(sales.inputs).total[data]}</td>)}
-									{chartValue === 'quarter' && sales && sales.inputs && sales.inputs.length > 0 && getQuarter(sales.inputs) && Object.keys(getQuarter(sales.inputs).total).map((quarter, id) => <td key={id}>${getQuarter(sales.inputs).total[quarter]}</td>)}
-									{chartValue === 'month' && sales && sales.inputs && sales.inputs.length > 0 && getMonthDetails(sales.inputs) && Object.keys(getMonthDetails(sales.inputs).total).map((month, id) => <td key={id}>${getMonthDetails(sales.inputs).total[month]}</td>)}
+									{chartValue === 'year' && sales && sales.inputs && Object.keys(getYear(sales.inputs).total).map((data, id) => <td key={id}>${getYear(sales.inputs).total[data].toFixed(2)}</td>)}
+									{chartValue === 'quarter' && sales && sales.inputs && sales.inputs.length > 0 && getQuarter(sales.inputs) && Object.keys(getQuarter(sales.inputs).total).map((quarter, id) => <td key={id}>${getQuarter(sales.inputs).total[quarter].toFixed(2)}</td>)}
+									{chartValue === 'month' && sales && sales.inputs && sales.inputs.length > 0 && getMonthDetails(sales.inputs) && Object.keys(getMonthDetails(sales.inputs).total).map((month, id) => <td key={id}>${getMonthDetails(sales.inputs).total[month].toFixed(2)}</td>)}
 								</tr>
 							</tbody>
 						</table>
@@ -332,6 +338,13 @@ function Sales() {
 					{sales && sales._id && <ExpenseInputs salesId={sales._id} expenseInputs={sales.majorExpenseInput} setMsg={setMsg} setErr={setErr} setAlertClass={setAlertClass} />}
 				</div>
 			</div>
+		</div>
+	) : (
+		<div className={`alert alert-success alert-dismissible fade ${alertClass}`} role='alert'>
+			<strong>Please subscribe our product to use the app</strong>
+			<button onClick={handleCloseAlert} type='button' className='close' data-dismiss='alert' aria-label='Close'>
+				<span aria-hidden='true'>×</span>
+			</button>
 		</div>
 	);
 }

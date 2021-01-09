@@ -97,7 +97,7 @@ function Billing() {
 			let purchasing = await getUserPurchasing();
 			dispatch({
 				type: 'SET_PURCHASING',
-				payload: purchasing,
+				payload: purchasing.filter((purc) => purc.status === 'active'),
 			});
 			let invoices = await userInvoices();
 			dispatch({

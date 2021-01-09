@@ -9,8 +9,10 @@ import { getRevenue } from '../../context/fetch-service';
 import moment from 'moment';
 
 function RevenueInputs({ revenues, setMsg, setErr, setAlertClass, chartValue }) {
-	const { state, dispatch } = React.useContext(AuthContext);
-
+	const {
+		state,
+		dispatch,
+	} = React.useContext(AuthContext);
 	const [open, setOpen] = React.useState(false);
 	const [loader, setLoader] = React.useState(false);
 	const [edit, setEdit] = React.useState(false);
@@ -163,7 +165,6 @@ function RevenueInputs({ revenues, setMsg, setErr, setAlertClass, chartValue }) 
 			revenueInputId,
 		});
 	};
-
 	return (
 		<div className='card'>
 			<div>

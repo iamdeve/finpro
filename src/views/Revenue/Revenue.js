@@ -52,13 +52,13 @@ function Revenue() {
 	const classes = useStyles();
 	const history = useHistory();
 	const {
-		state: { revenues, data, isAuthenticated },
+		state: { purchasing, revenues, data, isAuthenticated },
 		dispatch,
 	} = React.useContext(AuthContext);
-
+	const userSub = purchasing && purchasing.length > 0 ? purchasing.filter((sub) => sub.status === 'active' || sub.status === 'trial') : [];
 	const [msg, setMsg] = React.useState('');
 	const [err, setErr] = React.useState('');
-	const [alertClass, setAlertClass] = React.useState('');
+	const [alertClass, setAlertClass] = React.useState(userSub && userSub.length > 0 ? '' : 'show');
 	const [chartLoader, setChartLoader] = React.useState(true);
 
 	const [chartValue, setChartValue] = React.useState('year');
@@ -137,7 +137,7 @@ function Revenue() {
 		}
 	};
 
-	return (
+	return userSub && userSub.length > 0 ? (
 		<div className='container-fluid'>
 			<div className='row'>
 				<div className='col-12 col-xl-12'>
@@ -244,7 +244,7 @@ function Revenue() {
 														callback: function (value) {
 															return '$ ' + numeral(value).format('0.0a');
 														},
-														stepSize: 200,
+														stepSize: 400,
 														beginAtZero: true,
 													},
 													gridLines: {
@@ -296,6 +296,13 @@ function Revenue() {
 					{revenues && revenues._id && <ExpenseInputs revenueId={revenues._id} expenseInputs={revenues.majorExpenseInput} setMsg={setMsg} setErr={setErr} setAlertClass={setAlertClass} />}
 				</div>
 			</div>
+		</div>
+	) : (
+		<div className={`alert alert-success alert-dismissible fade ${alertClass}`} role='alert'>
+			<strong>Please subscribe our product to use the app</strong>
+			<button onClick={handleCloseAlert} type='button' className='close' data-dismiss='alert' aria-label='Close'>
+				<span aria-hidden='true'>×</span>
+			</button>
 		</div>
 	);
 }

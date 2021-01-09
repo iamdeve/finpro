@@ -6,7 +6,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { addInputs, deleteInputs, updateInputs } from '../../context/input-service';
 import { AuthContext } from '../../context/context';
 import { getInputs } from '../../context/fetch-service';
-import { getMonthName } from '../../utils/utils';
+import { getMonthName, Months } from '../../utils/utils';
 import moment from 'moment';
 
 import ContractExpense from './ContractorExpense';
@@ -246,21 +246,26 @@ function MarketingInputs({ marketing, setMsg, setErr, setAlertClass }) {
 								{marketing &&
 									marketing.inputs &&
 									marketing.inputs.length > 0 &&
-									marketing.inputs.map((input, id) => (
-										<tr key={id}>
-											<td>{input.hire}</td>
-											<td>{getMonthName(new Date(input.startDate).getMonth() + 1) + ' ' + new Date(input.startDate).getFullYear()}</td>
-											<td>${input.salary}</td>
-											<td>${input.taxes}</td>
-											<td>${input.commissions}</td>
-											<td>
-												<span>
-													<i title='Edit Plan' style={{ cursor: 'pointer' }} className='fe fe-edit edit-icon' onClick={() => handleEditInput(input)}></i>
-													<i title='Delete Plan' style={{ cursor: 'pointer' }} onClick={() => handleDeleteInput({ inputMainId: marketing._id, inputId: input._id })} className='fe fe-trash-2 delete-icon'></i>
-												</span>
-											</td>
-										</tr>
-									))}
+									marketing.inputs
+										.sort((a, b) => {
+											if (new Date(a.startDate).getFullYear() !== new Date(b.startDate).getFullYear()) return new Date(a.startDate).getFullYear() - new Date(b.startDate).getFullYear();
+											return Months.indexOf(getMonthName(new Date(a.startDate).getMonth())) - Months.indexOf(getMonthName(new Date(b.startDate).getMonth()));
+										})
+										.map((input, id) => (
+											<tr key={id}>
+												<td>{input.hire}</td>
+												<td>{getMonthName(new Date(input.startDate).getMonth() + 1) + ' ' + new Date(input.startDate).getFullYear()}</td>
+												<td>${input.salary}</td>
+												<td>%{input.taxes}</td>
+												<td>${input.commissions}</td>
+												<td>
+													<span>
+														<i title='Edit Plan' style={{ cursor: 'pointer' }} className='fe fe-edit edit-icon' onClick={() => handleEditInput(input)}></i>
+														<i title='Delete Plan' style={{ cursor: 'pointer' }} onClick={() => handleDeleteInput({ inputMainId: marketing._id, inputId: input._id })} className='fe fe-trash-2 delete-icon'></i>
+													</span>
+												</td>
+											</tr>
+										))}
 							</tbody>
 						</table>
 					</div>

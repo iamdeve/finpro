@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import axios from '../../../context/axios';
 import { useHistory, Link } from 'react-router-dom';
 import { AuthContext } from '../../../context/context';
-import { getUser } from '../../../context/fetch-service';
+import { getUser, getUserPurchasing } from '../../../context/fetch-service';
 import LOGO from '../../../assets/logo.png';
 import BGImgs from '../../../assets/sign-in-cover.jpg';
 const useStyles = makeStyles((theme) => ({
@@ -44,6 +44,13 @@ function Login() {
 			let login = await axios.post('/auth/login', loginForm);
 			if (login.status === 200 || login.status === 201) {
 				let user = await getUser(login.data.token);
+				let purchasing = await getUserPurchasing();
+				if (purchasing) {
+					dispatch({
+						type: 'SET_PURCHASING',
+						payload: purchasing,
+					});
+				}
 				if (user) {
 					setErr('');
 					setAlertClass('show');
