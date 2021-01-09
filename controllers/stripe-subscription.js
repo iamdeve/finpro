@@ -6,30 +6,61 @@ const mongoose = require('mongoose');
 module.exports.subscription = (req, res, next) => {
 	const userCogId = req.user.payload.email;
 	if (req.body.startTrial) {
-		const purchse = new Purchasing({
-			_id: mongoose.Types.ObjectId(),
-			userId: userCogId,
-			planName: 'Intro Plan',
-			planId: 'price_1I1ErgL2QqDUeeFI8WjeHVri',
-			planType: req.body.startTrial ? 'trial' : 'purchased',
-			trialStartDate: new Date(),
-			purchaseDate:new Date(),
-			status: 'active',
-		});
-		purchse
-			.save()
-			.then(() => {
-				console.log('purchase save');
-				return res.status(200).json({ message: `subscribe successfully` });
+		Purchasing.findOne({ userId: userCogId })
+			.exec()
+			.then((result) => {
+				if (result) {
+					console.log('==============');
+					result.planName = 'Intro Plan';
+					result.planId = 'price_1I1ErgL2QqDUeeFI8WjeHVri';
+					result.planType = 'trial';
+					result.trialStartDate = new Date();
+					result.purchaseDate = new Date();
+					result.status = 'active';
+					result
+						.save()
+						.then(() => {
+							console.log('purchase save');
+							return res.status(200).json({ message: `subscribe successfully` });
+						})
+						.catch((err) => {
+							console.log(`last final error ${err}`);
+							return res.status(500).json({
+								error: err,
+							});
+						});
+				} else {
+					console.log('*************');
+					const purchse = new Purchasing({
+						_id: mongoose.Types.ObjectId(),
+						userId: userCogId,
+						planName: 'Intro Plan',
+						planId: 'price_1I1ErgL2QqDUeeFI8WjeHVri',
+						planType: req.body.startTrial ? 'trial' : 'purchased',
+						trialStartDate: new Date(),
+						purchaseDate: new Date(),
+						status: 'active',
+					});
+					purchse
+						.save()
+						.then(() => {
+							console.log('purchase save');
+							return res.status(200).json({ message: `subscribe successfully` });
+						})
+						.catch((err) => {
+							console.log(`last final error ${err}`);
+							return res.status(500).json({
+								error: err,
+							});
+						});
+				}
 			})
 			.catch((err) => {
-				console.log(`last final error ${err}`);
+				console.log(`final error ${err}`);
 				return res.status(500).json({
 					error: err,
 				});
 			});
-		// res.status(200);
-		// return res.json({ message: 'Subscription added' });
 	} else {
 		PaymentMethod.findOne({ userId: userCogId, status: 'active', type: 'default' })
 			.exec()
@@ -59,23 +90,58 @@ module.exports.subscription = (req, res, next) => {
 									return res.status(400).json({ error: err, message: 'Something wrong' });
 								}
 								console.log(userSubscription);
-								const purchse = new Purchasing({
-									_id: mongoose.Types.ObjectId(),
-									userId: userCogId,
-									planName: 'Intro Plan',
-									planId: 'price_1I1ErgL2QqDUeeFI8WjeHVri',
-									planType: req.body.startTrial ? 'trial' : 'purchased',
-									trialStartDate: new Date(),
-									status: 'active',
-									purchaseDate: new Date(),
-									subscriptionDetails: userSubscription,
-									customerDetails: customer,
-								});
-								purchse
-									.save()
-									.then(() => {
-										console.log('purchase save');
-										return res.status(200).json({ message: `Subscribe successfully` });
+
+								Purchasing.findOne({ userId: userCogId })
+									.exec()
+									.then((result) => {
+										if (result) {
+											result.planName = 'Intro Plan';
+											result.planId = 'price_1I1ErgL2QqDUeeFI8WjeHVri';
+											result.planType = 'purchased';
+											result.trialStartDate = new Date();
+											result.status = 'active';
+											result.purchaseDate = new Date();
+											result.subscriptionDetails = userSubscription;
+											result.customerDetails = customer;
+
+											result
+												.save()
+												.then(() => {
+													console.log('purchase save');
+													return res.status(200).json({ message: `Subscribe successfully` });
+												})
+												.catch((err) => {
+													console.log(`last final error ${err}`);
+													return res.status(500).json({
+														error: err,
+													});
+												});
+										} else {
+											const purchse = new Purchasing({
+												_id: mongoose.Types.ObjectId(),
+												userId: userCogId,
+												planName: 'Intro Plan',
+												planId: 'price_1I1ErgL2QqDUeeFI8WjeHVri',
+												planType: req.body.startTrial ? 'trial' : 'purchased',
+												trialStartDate: new Date(),
+												status: 'active',
+												purchaseDate: new Date(),
+												subscriptionDetails: userSubscription,
+												customerDetails: customer,
+											});
+											purchse
+												.save()
+												.then(() => {
+													console.log('purchase save');
+													return res.status(200).json({ message: `Subscribe successfully` });
+												})
+												.catch((err) => {
+													console.log(`last final error ${err}`);
+													return res.status(500).json({
+														error: err,
+													});
+												});
+										}
 									})
 									.catch((err) => {
 										console.log(`last final error ${err}`);
@@ -83,8 +149,6 @@ module.exports.subscription = (req, res, next) => {
 											error: err,
 										});
 									});
-								// res.status(200);
-								// return res.json({ message: 'Subscription added' });
 							},
 						);
 					},
@@ -121,30 +185,48 @@ module.exports.cancel = async (req, res, next) => {
 	const userCogId = req.user.payload.email;
 	Purchasing.findOne({ userId: userCogId })
 		.then(async (result) => {
-			try {
-				const deleted = await stripe.subscriptions.del(result.subscriptionDetails.id);
-				console.log(deleted);
-
-				if (deleted) {
-					result.status = 'cancel';
-					result
-						.save()
-						.then(() => {
-							console.log('purchase cancel');
-							return res.json({ message: 'Subscription canceled successfully' });
-						})
-						.catch((err) => {
-							console.log(`last final error ${err}`);
-							return res.status(500).json({
-								error: err,
-							});
+			console.log(result);
+			if (result && result.planType === 'trial') {
+				result.status = 'cancel';
+				result
+					.save()
+					.then(() => {
+						console.log('purchase cancel');
+						console.log(result);
+						return res.json({ message: 'Subscription canceled successfully' });
+					})
+					.catch((err) => {
+						console.log(`last final error ${err}`);
+						return res.status(500).json({
+							error: err,
 						});
+					});
+			} else {
+				try {
+					const deleted = await stripe.subscriptions.del(result.subscriptionDetails.id);
+					console.log(deleted);
+
+					if (deleted) {
+						result.status = 'cancel';
+						result
+							.save()
+							.then(() => {
+								console.log('purchase cancel');
+								return res.json({ message: 'Subscription canceled successfully' });
+							})
+							.catch((err) => {
+								console.log(`last final error ${err}`);
+								return res.status(500).json({
+									error: err,
+								});
+							});
+					}
+				} catch (err) {
+					console.log(`final error ${err}`);
+					return res.status(500).json({
+						error: err,
+					});
 				}
-			} catch (err) {
-				console.log(`final error ${err}`);
-				return res.status(500).json({
-					error: err,
-				});
 			}
 		})
 		.catch((err) => {
