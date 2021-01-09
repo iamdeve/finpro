@@ -55,7 +55,7 @@ function Revenue() {
 		state: { purchasing, revenues, data, isAuthenticated },
 		dispatch,
 	} = React.useContext(AuthContext);
-	const userSub = purchasing && purchasing.length > 0 ? purchasing.filter((sub) => sub.status === 'active' || sub.status === 'trial') : [];
+	const userSub = purchasing && purchasing.length > 0 ? purchasing.filter((sub) => sub.status === 'active') : [];
 	const [msg, setMsg] = React.useState('');
 	const [err, setErr] = React.useState('');
 	const [alertClass, setAlertClass] = React.useState(userSub && userSub.length > 0 ? '' : 'show');

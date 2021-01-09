@@ -57,7 +57,7 @@ function Sales() {
 	} = React.useContext(AuthContext);
 
 	const sales = inputs.filter((i) => i.title === 'sales')[0];
-	const userSub = purchasing && purchasing.length > 0 ? purchasing.filter((sub) => sub.status === 'active' || sub.status === 'trial') : [];
+	const userSub = purchasing && purchasing.length > 0 ? purchasing.filter((sub) => sub.status === 'active') : [];
 	const [chartValue, setChartValue] = React.useState('year');
 	const handleChange = (event) => {
 		setChartValue(event.target.value);

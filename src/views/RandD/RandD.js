@@ -56,7 +56,7 @@ function RandD() {
 		dispatch,
 	} = React.useContext(AuthContext);
 
-	const userSub = purchasing && purchasing.length > 0 ? purchasing.filter((sub) => sub.status === 'active' || sub.status === 'trial') : [];
+	const userSub = purchasing && purchasing.length > 0 ? purchasing.filter((sub) => sub.status === 'active') : [];
 
 	const randd = inputs.filter((i) => i.title === 'randd')[0];
 

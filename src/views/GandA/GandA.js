@@ -58,7 +58,7 @@ function GandA() {
 	} = React.useContext(AuthContext);
 
 	const ganda = inputs.filter((i) => i.title === 'ganda')[0];
-	const userSub = purchasing && purchasing.length > 0 ? purchasing.filter((sub) => sub.status === 'active' || sub.status === 'trial') : [];
+	const userSub = purchasing && purchasing.length > 0 ? purchasing.filter((sub) => sub.status === 'active') : [];
 
 	const [chartValue, setChartValue] = React.useState('year');
 	const handleChange = (event) => {

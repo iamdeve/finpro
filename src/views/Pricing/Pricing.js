@@ -3,6 +3,7 @@ import { getUserPaymentMethods, getUserPurchasing } from '../../context/fetch-se
 import { AuthContext } from '../../context/context';
 import { useHistory } from 'react-router-dom';
 import { subscription, cancelSubscription } from '../../context/subscription-service';
+import { set } from 'numeral';
 const planlist = ['SaaS business Model', 'Input Variables', 'Charts', 'Reports', '30-days free trial'];
 
 function Pricing() {
@@ -11,6 +12,8 @@ function Pricing() {
 		state: { user, billingDetails, purchasing, isAuthenticated },
 		dispatch,
 	} = React.useContext(AuthContext);
+
+	const userSub = purchasing && purchasing.length > 0 ? purchasing.filter((sub) => sub.status === 'active') : [];
 
 	const [alertErrOpen, setAlertErrOpen] = React.useState(false);
 	const [loader, setLoader] = React.useState(false);
@@ -48,6 +51,9 @@ function Pricing() {
 
 	const handleCloseAlert = () => {
 		setAlertClass('hide');
+		setAlertErrOpen('');
+		setMsg('');
+		setErr('');
 	};
 
 	const giveAlert = () => {
@@ -58,6 +64,12 @@ function Pricing() {
 	const addSubscription = async (e, startTrial) => {
 		e.preventDefault();
 		setLoaderFor(startTrial ? 'trial' : 'sub');
+		if (!startTrial && billingDetails.length === 0) {
+			giveAlert();
+			setLoaderFor('');
+			return;
+		}
+
 		setLoader(true);
 		try {
 			let sub = await subscription(startTrial);
@@ -106,6 +118,7 @@ function Pricing() {
 	const cancelUserSubscription = async (e) => {
 		e.preventDefault();
 		setLoader(true);
+		setLoaderFor('cancel');
 		try {
 			let sub = await cancelSubscription();
 			if (sub.status === 200 || sub.status === 201) {
@@ -210,35 +223,36 @@ function Pricing() {
 
 								<div className='mt-2'></div>
 								<div className='mb-4 text-center'>
-									{billingDetails && billingDetails.length > 0 ? (
-										purchasing && purchasing.length > 0 ? (
+									{userSub && userSub.length > 0 ? (
+										<>
 											<button onClick={cancelUserSubscription} className='btn btn-custom btn-padd'>
+												{loaderFor === 'cancel' && (
+													<div className='spinner-border spinner-border-sm' role='status'>
+														<span className='sr-only'>Loading...</span>
+													</div>
+												)}
 												Cancel
 											</button>
-										) : (
-											<>
-												<button onClick={(e) => addSubscription(e)} className='btn btn-custom btn-padd'>
-													{loaderFor === 'sub' && (
+											{userSub[0].planType === 'trial' && (
+												<button onClick={addSubscription} className='btn btn-custom btn-padd'>
+													{loaderFor === 'purchase' && (
 														<div className='spinner-border spinner-border-sm' role='status'>
 															<span className='sr-only'>Loading...</span>
 														</div>
 													)}
-													{(loaderFor === '' || loaderFor === 'trial') && 'Subscribe'}
+													Purchase
 												</button>
-												<button onClick={(e) => addSubscription(e, 'startTrial')} className='btn btn-custom btn-padd'>
-													{loaderFor === 'trial' && (
-														<div className='spinner-border spinner-border-sm' role='status'>
-															<span className='sr-only'>Loading...</span>
-														</div>
-													)}
-													{(loaderFor === '' || loaderFor === 'sub') && 'Start Trial'}
-												</button>
-											</>
-										)
+											)}
+										</>
 									) : (
 										<>
-											<button onClick={giveAlert} className='btn btn-custom btn-padd'>
-												Select Plan
+											<button onClick={(e) => addSubscription(e)} className='btn btn-custom btn-padd'>
+												{loaderFor === 'sub' && (
+													<div className='spinner-border spinner-border-sm' role='status'>
+														<span className='sr-only'>Loading...</span>
+													</div>
+												)}
+												{(loaderFor === '' || loaderFor === 'trial') && 'Subscribe'}
 											</button>
 											<button onClick={(e) => addSubscription(e, 'startTrial')} className='btn btn-custom btn-padd'>
 												{loaderFor === 'trial' && (

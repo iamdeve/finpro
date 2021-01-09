@@ -29,7 +29,8 @@ function Reports() {
 		dispatch,
 	} = React.useContext(AuthContext);
 
-	const userSub = purchasing && purchasing.length > 0 ? purchasing.filter((sub) => sub.status === 'active' || sub.status === 'trial') : [];
+	console.log(tableData);
+	const userSub = purchasing && purchasing.length > 0 ? purchasing.filter((sub) => sub.status === 'active') : [];
 
 	const [csvData, setCsvData] = React.useState('');
 	const [chartValue, setChartValue] = React.useState('P&L by Year');

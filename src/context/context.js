@@ -97,7 +97,6 @@ export const reducer = (state, action) => {
 			};
 		case SET_PURCHASING:
 			localStorage.setItem('finProPurch', JSON.stringify(action.payload));
-			console.log(action, action.payload);
 			return {
 				...state,
 				purchasing: action.payload,
@@ -300,15 +299,18 @@ function setReports(type, state) {
 				});
 			}
 
+			data[1] = [];
 			for (let j = 0; j < 5; j++) {
 				// console.log(getYearExpenses(state.inputs, j));
 				data[1].push(getYearExpenses(state.inputs, j));
 			}
+			data[2] = [];
 			for (let j = 0; j < 5; j++) {
 				if (data[0][j]) {
 					data[2].push(data[0][j] - getYearExpenses(state.inputs, j));
 				}
 			}
+			data[3] = [];
 			for (let j = 0; j < 5; j++) {
 				data[3].push(getYearEbit(state.inputs, j) / 3);
 			}
@@ -366,15 +368,19 @@ function setReports(type, state) {
 				});
 			}
 
+			dataq[1] = [];
 			for (let j = 0; j < quarterData.labels.length; j++) {
 				dataq[1].push(getQuarterExpenses(state.inputs, j));
 			}
 
+			dataq[2] = [];
 			for (let j = 0; j < quarterData.labels.length; j++) {
 				if (dataq[0][j]) {
 					dataq[2].push(dataq[0][j] - getQuarterExpenses(state.inputs, j));
 				}
 			}
+
+			dataq[3] = [];
 			for (let j = 0; j < quarterData.labels.length; j++) {
 				dataq[3].push(getQuarterEbit(state.inputs, j) / 3 / 4);
 			}
@@ -407,7 +413,8 @@ function setReports(type, state) {
 }
 
 function setReportTableData(state) {
-	if (state.revenues && state.revenues.length > 0) {
+	console.log(state.revenues);
+	if (state.revenues && state.revenues.revenuInputs.length > 0) {
 		let quarterData;
 		let qdata = [...state.revenues.revenuInputs]; //.filter((t) => t.type === 'Yearly');
 		quarterData = {
