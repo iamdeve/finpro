@@ -28,6 +28,9 @@ const purchasingSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	trialStartDate: {
+		type: String,
+	},
 	subscriptionDetails: {
 		type: Object,
 	},
