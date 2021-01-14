@@ -6,13 +6,11 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { addPlan, deletePlan, updatePlan } from '../../context/revenue-service';
 import { AuthContext } from '../../context/context';
 import { getRevenue } from '../../context/fetch-service';
+import { colors } from '../../context/colors';
 import moment from 'moment';
 
 function RevenueInputs({ revenues, setMsg, setErr, setAlertClass, chartValue }) {
-	const {
-		state,
-		dispatch,
-	} = React.useContext(AuthContext);
+	const { state, dispatch } = React.useContext(AuthContext);
 	const [open, setOpen] = React.useState(false);
 	const [loader, setLoader] = React.useState(false);
 	const [edit, setEdit] = React.useState(false);
@@ -73,6 +71,7 @@ function RevenueInputs({ revenues, setMsg, setErr, setAlertClass, chartValue }) 
 					dispatch({ type: 'VIEW_DATA', payload: chartValue });
 				}
 			} else {
+				revenueForm.color = colors[Math.floor(Math.random() * colors.length - 1)];
 				let add = await addPlan(revenueForm);
 				if (add.status === 200 || add.status === 201) {
 					let revenues = await getRevenue();

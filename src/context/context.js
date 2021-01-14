@@ -2,6 +2,7 @@ import React from 'react';
 import { LOGIN, LOGOUT, SET_INPUTS, SET_REVENUE, SET_TABLE_DATA, SET_USER, SET_BILLING, SET_INVOICES, SET_PURCHASING, VIEW_DATA, VIEW_REPORTS } from './types';
 import { getMonthName, setQuarterLabel, getQuarterEbit, getQuarterExpenses, getYearExpenses, getYearEbit } from '../utils/utils';
 import moment from 'moment';
+import { colors } from './colors';
 export const initialState = {
 	isAuthenticated: localStorage.getItem('finProtoken') ? true : false,
 	user: localStorage.getItem('finProUser') ? JSON.parse(localStorage.getItem('finProUser')) : null,
@@ -39,6 +40,7 @@ export const initialState = {
 		],
 	},
 };
+
 export const AuthContext = React.createContext();
 
 export const reducer = (state, action) => {
@@ -126,7 +128,7 @@ function setData(type, state) {
 				labels: [],
 				datasets: [],
 			};
-			let datalabels = ydata.map((l) => l.plan);
+			let datalabels = ydata.map((l) => ({ plan: l.plan, color: l.color }));
 			let datasets = [];
 			let data = {};
 			for (let i = 0; i < ydata.length; i++) {
@@ -152,17 +154,19 @@ function setData(type, state) {
 			yearData.labels = [new Date().getFullYear(), new Date().getFullYear() + 1, new Date().getFullYear() + 2, new Date().getFullYear() + 3, new Date().getFullYear() + 4];
 			datalabels.forEach((label, id) => {
 				yearData.datasets[id] = {};
-				if (label === 'Silver Plan') {
-					yearData.datasets[id].backgroundColor = '#53CA35';
-				} else if (label === 'Gold Plan') {
-					yearData.datasets[id].backgroundColor = '#F14038';
-				} else if (label === 'Platinum Plan') {
-					yearData.datasets[id].backgroundColor = '#4E5AC0';
-				} else if (label === 'Enterprice Plan') {
-					yearData.datasets[id].backgroundColor = '#9891AF';
+				if (label.plan === 'Silver Plan' || label.plan === 'Silver') {
+					yearData.datasets[id].backgroundColor = /*label.color ? label.color :*/ '#53CA35';
+				} else if (label.plan === 'Gold Plan' || label.plan === 'Gold') {
+					yearData.datasets[id].backgroundColor = /*label.color ? label.color :*/ '#F14038';
+				} else if (label.plan === 'Platinum Plan' || label.plan === 'Platinum') {
+					yearData.datasets[id].backgroundColor = /*label.color ? label.color :*/ '#4E5AC0';
+				} else if (label.plan === 'Enterprice Plan') {
+					yearData.datasets[id].backgroundColor = /*label.color ? label.color :*/ '#9891AF';
+				} else {
+					yearData.datasets[id].backgroundColor = label.color ? label.color : colors[Math.floor(Math.random() * colors.length - 1)];
 				}
 				yearData.datasets[id].data = datasets[id];
-				yearData.datasets[id].label = label;
+				yearData.datasets[id].label = label.plan;
 			});
 			return yearData;
 		case 'quarter':
@@ -170,7 +174,7 @@ function setData(type, state) {
 			let qdata = [...state.revenues.revenuInputs];
 			quarterData = { labels: [], datasets: [] };
 
-			let qdatalabels = qdata.map((l) => l.plan);
+			let qdatalabels = qdata.map((l) => ({ plan: l.plan, color: l.color }));
 			let qdatasets = [];
 			let dataq = {};
 			for (let i = 0; i < qdata.length; i++) {
@@ -194,21 +198,23 @@ function setData(type, state) {
 					}
 				}
 			}
-			quarterData.labels = ['Jan-Apr', 'May-Aug', 'Sep-Dec'];
+			quarterData.labels = ['Jan-Mar', 'Apr-Jun', 'Jul-Sep', 'Oct-Dec'];
 
 			qdatalabels.forEach((label, id) => {
 				quarterData.datasets[id] = {};
-				if (label === 'Silver Plan') {
+				if (label.plan === 'Silver Plan' || label.plan === 'Silver Plan') {
 					quarterData.datasets[id].backgroundColor = '#53CA35';
-				} else if (label === 'Gold Plan') {
+				} else if (label.plan === 'Gold Plan' || label.plan === 'Gold') {
 					quarterData.datasets[id].backgroundColor = '#F14038';
-				} else if (label === 'Platinum Plan') {
+				} else if (label.plan === 'Platinum Plan' || label.plan === 'Platinum') {
 					quarterData.datasets[id].backgroundColor = '#4E5AC0';
-				} else if (label === 'Enterprice Plan') {
+				} else if (label.plan === 'Enterprice Plan' || label.plan === 'Enterprice') {
 					quarterData.datasets[id].backgroundColor = '#9891AF';
+				} else {
+					quarterData.datasets[id].backgroundColor = label.color ? label.color : colors[Math.floor(Math.random() * colors.length - 1)];
 				}
 				quarterData.datasets[id].data = qdatasets[id];
-				quarterData.datasets[id].label = label;
+				quarterData.datasets[id].label = label.plan;
 			});
 			return quarterData;
 		case 'month':
@@ -216,7 +222,7 @@ function setData(type, state) {
 			let mdata = [...state.revenues.revenuInputs];
 			monthData = { labels: [], datasets: [] };
 
-			let mdatalabels = mdata.map((l) => l.plan);
+			let mdatalabels = mdata.map((l) => ({ plan: l.plan, color: l.color }));
 			let mdatasets = [];
 			let datam = {};
 			for (let i = 0; i < mdata.length; i++) {
@@ -249,17 +255,19 @@ function setData(type, state) {
 
 			mdatalabels.forEach((label, id) => {
 				monthData.datasets[id] = {};
-				if (label === 'Silver Plan') {
+				if (label.plan === 'Silver Plan' || label.plan === 'Silver') {
 					monthData.datasets[id].backgroundColor = '#53CA35';
-				} else if (label === 'Gold Plan') {
+				} else if (label.plan === 'Gold Plan' || label.plan === 'Gold') {
 					monthData.datasets[id].backgroundColor = '#F14038';
-				} else if (label === 'Platinum Plan') {
+				} else if (label.plan === 'Platinum Plan' || label.plan === 'Platinum') {
 					monthData.datasets[id].backgroundColor = '#4E5AC0';
-				} else if (label === 'Enterprice Plan') {
+				} else if (label === 'Enterprice Plan' || label.plan === 'Enterprice') {
 					monthData.datasets[id].backgroundColor = '#9891AF';
+				} else {
+					monthData.datasets[id].backgroundColor = label.color ? label.color : colors[Math.floor(Math.random() * colors.length - 1)];
 				}
 				monthData.datasets[id].data = mdatasets[id];
-				monthData.datasets[id].label = label;
+				monthData.datasets[id].label = label.plan;
 			});
 			return monthData;
 		default:

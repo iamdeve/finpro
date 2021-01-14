@@ -115,11 +115,13 @@ export const getMonthName = (digit) => {
 function quarter(digit, year) {
 	switch (digit) {
 		case 0:
-			return 'Jan-Apr ' + year;
+			return 'Jan-Mar ' + year;
 		case 1:
-			return 'May-Aug ' + year;
+			return 'Apr-Jun ' + year;
 		case 2:
-			return 'Sep-Dec ' + year;
+			return 'Jul-Sep ' + year;
+		case 3:
+			return 'Oct-Dec ' + year;
 		default:
 			return;
 	}
@@ -142,12 +144,14 @@ export const getQuarter = (data, date = 'startDate', value) => {
 	// console.log(data);
 	// data.slice(Math.max(data.length - 5, 0));
 	data.forEach((d) => {
-		if (new Date(d[date]).getMonth() === 0 || new Date(d[date]).getMonth() === 1 || new Date(d[date]).getMonth() === 2 || new Date(d[date]).getMonth() === 3) {
-			Q1.push({ ...d, quarter: 'Jan-Apr ' + new Date(d[date]).getFullYear() });
-		} else if (new Date(d[date]).getMonth() === 4 || new Date(d[date]).getMonth() === 5 || new Date(d[date]).getMonth() === 6 || new Date(d[date]).getMonth() === 7) {
-			Q1.push({ ...d, quarter: 'May-Aug ' + new Date(d[date]).getFullYear() });
-		} else if (new Date(d[date]).getMonth() === 8 || new Date(d[date]).getMonth() === 9 || new Date(d[date]).getMonth() === 10 || new Date(d[date]).getMonth() === 11) {
-			Q1.push({ ...d, quarter: 'Sep-Dec ' + new Date(d[date]).getFullYear() });
+		if (new Date(d[date]).getMonth() === 0 || new Date(d[date]).getMonth() === 1 || new Date(d[date]).getMonth() === 2) {
+			Q1.push({ ...d, quarter: 'Jan-Mar ' + new Date(d[date]).getFullYear() });
+		} else if (new Date(d[date]).getMonth() === 3 || new Date(d[date]).getMonth() === 4 || new Date(d[date]).getMonth() === 5) {
+			Q1.push({ ...d, quarter: 'Apr-Jun ' + new Date(d[date]).getFullYear() });
+		} else if (new Date(d[date]).getMonth() === 6 || new Date(d[date]).getMonth() === 7 || new Date(d[date]).getMonth() === 8) {
+			Q1.push({ ...d, quarter: 'Jul-Sep ' + new Date(d[date]).getFullYear() });
+		} else if (new Date(d[date]).getMonth() === 9 || new Date(d[date]).getMonth() === 10 || new Date(d[date]).getMonth() === 11) {
+			Q1.push({ ...d, quarter: 'Oct-Dec ' + new Date(d[date]).getFullYear() });
 		}
 	});
 	// console.log(Q1);
@@ -781,4 +785,3 @@ export const getQuarterEbit = (inputs, key) => {
 	// console.log(salesTotal, marketingTotal, randdTotal, gandaTotal);
 	return salesTotal + marketingTotal + randdTotal + gandaTotal;
 };
-
