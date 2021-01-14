@@ -32,6 +32,9 @@ const revenuSchema = new mongoose.Schema({
 				type: String,
 				required: true,
 			},
+			color: {
+				type: String,
+			},
 			date: {
 				type: Date,
 				default: new Date(),

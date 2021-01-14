@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Revenue = require('../models/revenue');
 const { check, validationResult } = require('express-validator');
+const colors = require('../utils/colors');
 
 module.exports.revenueInputValidator = [
 	check('plan', 'Plan field Should not empty').not().isEmpty(),
@@ -31,7 +32,7 @@ module.exports.revenueInput = (req, res, next) => {
 		return res.status(400).json({ errors: errors.array() });
 	}
 
-	const { plan, price, purchasers, type, date } = req.body;
+	const { plan, price, purchasers, type, date, color } = req.body;
 	const userCogId = req.user.payload.email;
 	Revenue.findOne({ userId: userCogId })
 		.exec()
@@ -45,6 +46,7 @@ module.exports.revenueInput = (req, res, next) => {
 					purchasers,
 					type,
 					date,
+					color: color ? color : colors[Math.floor(Math.random() * colors.length - 1)],
 				});
 				await result.save();
 				return res.status(200).json({
@@ -62,6 +64,7 @@ module.exports.revenueInput = (req, res, next) => {
 							purchasers,
 							type,
 							date,
+							color: color ? color : colors[Math.floor(Math.random() * colors.length - 1)],
 						},
 					],
 				});
