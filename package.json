@@ -1,59 +1,60 @@
 {
-  "name": "client",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@material-ui/core": "^4.11.2",
-    "@material-ui/icons": "^4.11.2",
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
-    "amazon-cognito-identity-js": "^4.5.6",
-    "axios": "^0.21.0",
-    "bootstrap": "^4.5.3",
-    "chart.js": "^2.9.4",
-    "date-fns": "^2.16.1",
-    "jspdf": "^2.2.0",
-    "jspdf-autotable": "^3.5.13",
-    "jwt-decode": "^3.1.2",
-    "moment": "^2.29.1",
-    "node-fetch": "^2.6.1",
-    "numeral": "^2.0.6",
-    "react": "^17.0.1",
-    "react-bootstrap": "^1.4.0",
-    "react-chartjs-2": "^2.11.1",
-    "react-csv": "^2.0.3",
-    "react-dom": "^17.0.1",
-    "react-payment-inputs": "^1.1.7",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.1",
-    "react-stripe-checkout": "^2.6.3",
-    "styled-components": "^5.2.1",
-    "sweetalert2": "^10.12.5",
-    "web-vitals": "^0.2.4"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+	"name": "client",
+	"version": "0.1.0",
+	"private": true,
+	"dependencies": {
+		"@material-ui/core": "^4.11.2",
+		"@material-ui/icons": "^4.11.2",
+		"@testing-library/jest-dom": "^5.11.4",
+		"@testing-library/react": "^11.1.0",
+		"@testing-library/user-event": "^12.1.10",
+		"amazon-cognito-identity-js": "^4.5.6",
+		"axios": "^0.21.0",
+		"bootstrap": "^4.5.3",
+		"chart.js": "^2.9.4",
+		"date-fns": "^2.16.1",
+		"jspdf": "^2.2.0",
+		"jspdf-autotable": "^3.5.13",
+		"jwt-decode": "^3.1.2",
+		"moment": "^2.29.1",
+		"node-fetch": "^2.6.1",
+		"numeral": "^2.0.6",
+		"react": "^17.0.1",
+		"react-bootstrap": "^1.4.0",
+		"react-chartjs-2": "^2.11.1",
+		"react-csv": "^2.0.3",
+		"react-dom": "^17.0.1",
+		"react-payment-inputs": "^1.1.7",
+		"react-router-dom": "^5.2.0",
+		"react-scripts": "4.0.1",
+		"react-stripe-checkout": "^2.6.3",
+		"styled-components": "^5.2.1",
+		"sweetalert2": "^10.12.5",
+		"web-vitals": "^0.2.4"
+	},
+	"scripts": {
+		"start": "react-scripts start",
+		"build": "react-scripts build",
+		"test": "react-scripts test",
+		"eject": "react-scripts eject"
+	},
+	"eslintConfig": {
+		"extends": [
+			"react-app",
+			"react-app/jest"
+		]
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	},
+	"proxy": "https://emmb3fy0r8.execute-api.us-east-1.amazonaws.com/dev"
 }

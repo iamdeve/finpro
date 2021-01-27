@@ -50,9 +50,9 @@ function Settings() {
 		const formData = new FormData();
 		formData.append('image', file, file.name);
 		try {
-			let profile = await axios.post('/auth/profile', formData);
+			let profile = await axios.post('/profile', formData);
 			if (profile.status === 200) {
-				let user = await axios.get('/auth/user');
+				let user = await axios.get('/user');
 				if (user.status === 200) {
 					setErr('');
 					setAlertClass('show');
@@ -84,9 +84,9 @@ function Settings() {
 		setLoader(true);
 		e.preventDefault();
 		try {
-			let update = await axios.patch('/auth/setting', userSetting);
+			let update = await axios.patch('/setting', userSetting);
 			if (update.status === 200) {
-				let user = await axios.get('/auth/user');
+				let user = await axios.get('/user');
 				if (user.status === 200) {
 					setErr('');
 					setAlertClass('show');
@@ -155,7 +155,7 @@ function Settings() {
 								<div className='col-auto'>
 									<div title='Change Profile' className='file-type-container avatar avatar-container'>
 										<div onClick={cancelProfileChange} className='avatar-cross'>
-											<i style={{fontSize: '16px'}} className='fe fe-x'></i>
+											<i style={{ fontSize: '16px' }} className='fe fe-x'></i>
 										</div>
 										<span className='btn-type-file'>
 											<input type='file' name='file' onChange={(e) => onChangeFile(e)} />

@@ -3,7 +3,7 @@ import axios from './axios';
 export const addPayment = async (data) => {
 	return new Promise((resolve, reject) => {
 		axios
-			.post('/payment/add', data)
+			.post('/add', data)
 			.then((rev) => {
 				resolve(rev);
 			})
@@ -17,7 +17,7 @@ export const addPayment = async (data) => {
 export const deletePayment = async (id) => {
 	return new Promise((resolve, reject) => {
 		axios
-			.delete('/payment/delete/' + id)
+			.delete('/delete/' + id)
 			.then((rev) => {
 				resolve(rev);
 			})

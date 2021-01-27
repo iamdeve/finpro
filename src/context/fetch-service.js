@@ -4,7 +4,7 @@ export const getUser = async (token) => {
 	return new Promise((resolve, reject) => {
 		axios.defaults.headers.common['authorization'] = `${token}`;
 		axios
-			.get('/auth/user')
+			.get('/user')
 			.then((user) => {
 				resolve(user.data.user);
 			})
@@ -17,7 +17,7 @@ export const getUser = async (token) => {
 export const getUserPaymentMethods = async (token) => {
 	return new Promise((resolve, reject) => {
 		axios
-			.get('/payment/userPayment')
+			.get('/userPayment')
 			.then((payment) => {
 				resolve(payment.data.paymentMethods);
 			})
@@ -31,7 +31,7 @@ export const getUserPaymentMethods = async (token) => {
 export const getUserPurchasing = async () => {
 	return new Promise((resolve, reject) => {
 		axios
-			.get('/purchasing/userPurchasing')
+			.get('/userPurchasing')
 			.then((purchasing) => {
 				resolve(purchasing.data.purchasing);
 			})
@@ -45,7 +45,7 @@ export const getUserPurchasing = async () => {
 export const getRevenue = async () => {
 	return new Promise((resolve, reject) => {
 		axios
-			.get('/revenue/userRevenue')
+			.get('/userRevenue')
 			.then((reve) => {
 				resolve(reve.data.allRevenus);
 			})
@@ -59,7 +59,7 @@ export const getRevenue = async () => {
 export const getInputs = async () => {
 	return new Promise((resolve, reject) => {
 		axios
-			.get('/inputs/userInputs')
+			.get('/userInputs')
 			.then((input) => {
 				resolve(input.data.allInputs);
 			})

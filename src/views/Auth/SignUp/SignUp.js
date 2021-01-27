@@ -4,6 +4,7 @@ import axios from '../../../context/axios';
 import { Link } from 'react-router-dom';
 import LOGO from '../../../assets/logo.png';
 import BGImgs from '../../../assets/sign-in-cover.jpg';
+import ConfirmRegistration from '../Confirm/Confirm';
 const useStyles = makeStyles((theme) => ({
 	root: {
 		display: 'flex',
@@ -16,8 +17,9 @@ function SignUp() {
 
 	const [alertClass, setAlertClass] = React.useState('');
 	const [msg, setMsg] = React.useState('');
-	const [err, setErr] = React.useState(''); 
+	const [err, setErr] = React.useState('');
 	const [loader, setLoader] = React.useState(false);
+	const [confirm, setConfrim] = React.useState(false);
 
 	const [passwordType, setPasswordType] = React.useState('password');
 	const [signupForm, setSignupForm] = React.useState({
@@ -40,7 +42,7 @@ function SignUp() {
 		setLoader(true);
 		e.preventDefault();
 		try {
-			let signup = await axios.post('/auth/signup', signupForm);
+			let signup = await axios.post('/signup', signupForm);
 			if (signup.status === 200 || signup.status === 201) {
 				setErr('');
 				setAlertClass('show');
@@ -48,7 +50,8 @@ function SignUp() {
 					email: '',
 					password: '',
 				});
-				setMsg('Successfully Registered');
+				setConfrim(true);
+				// setMsg('Successfully Registered');
 				setLoader(false);
 			}
 		} catch (e) {
@@ -80,7 +83,9 @@ function SignUp() {
 		}
 	};
 
-	return (
+	return confirm ? (
+		<ConfirmRegistration email={signupForm.email} />
+	) : (
 		<div className='container-fluid'>
 			<div className='row align-items-center justify-content-center'>
 				<div className='col-12 col-md-5 col-lg-6 col-xl-4 px-lg-6 my-5'>

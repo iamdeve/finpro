@@ -3,7 +3,7 @@ import axios from './axios';
 export const addInputs = async (data) => {
 	return new Promise((resolve, reject) => {
 		axios
-			.post('/inputs/addInputs', data)
+			.post('/addInputs', data)
 			.then((rev) => {
 				resolve(rev);
 			})
@@ -17,7 +17,7 @@ export const addInputs = async (data) => {
 export const deleteInputs = async (data) => {
 	return new Promise((resolve, reject) => {
 		axios
-			.post('/inputs/deleteInputs', data)
+			.post('/deleteInputs', data)
 			.then((rev) => {
 				resolve(rev);
 			})
@@ -31,7 +31,7 @@ export const deleteInputs = async (data) => {
 export const updateInputs = async (data) => {
 	return new Promise((resolve, reject) => {
 		axios
-			.put('/inputs/updateInputs', data)
+			.put('/updateInputs', data)
 			.then((rev) => {
 				resolve(rev);
 			})
@@ -45,7 +45,7 @@ export const updateInputs = async (data) => {
 export const addInputExpense = async (data) => {
 	return new Promise((resolve, reject) => {
 		axios
-			.post('/inputs/addInputExpense', data)
+			.post('/addInputExpense', data)
 			.then((rev) => {
 				resolve(rev);
 			})
@@ -58,7 +58,7 @@ export const addInputExpense = async (data) => {
 export const updateInputExpense = async (data) => {
 	return new Promise((resolve, reject) => {
 		axios
-			.put('/inputs/updateInputExpense', data)
+			.put('/updateInputExpense', data)
 			.then((rev) => {
 				resolve(rev);
 			})
@@ -72,7 +72,7 @@ export const updateInputExpense = async (data) => {
 export const deleteInputExpense = async (data) => {
 	return new Promise((resolve, reject) => {
 		axios
-			.post('/inputs/deleteInputExpense', data)
+			.post('/deleteInputExpense', data)
 			.then((rev) => {
 				resolve(rev);
 			})

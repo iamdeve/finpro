@@ -3,7 +3,7 @@ import axios from './axios';
 export const addPlan = async (data) => {
 	return new Promise((resolve, reject) => {
 		axios
-			.post('/revenue/addRevenue', data)
+			.post('/addRevenue', data)
 			.then((rev) => {
 				resolve(rev);
 			})
@@ -17,7 +17,7 @@ export const addPlan = async (data) => {
 export const deletePlan = async (data) => {
 	return new Promise((resolve, reject) => {
 		axios
-			.post('/revenue/deleteRevenue', data)
+			.post('/deleteRevenue', data)
 			.then((rev) => {
 				resolve(rev);
 			})
@@ -31,7 +31,7 @@ export const deletePlan = async (data) => {
 export const updatePlan = async (data) => {
 	return new Promise((resolve, reject) => {
 		axios
-			.put('/revenue/updateRevenue', data)
+			.put('/updateRevenue', data)
 			.then((rev) => {
 				resolve(rev);
 			})
@@ -45,7 +45,7 @@ export const updatePlan = async (data) => {
 export const addExpense = async (data) => {
 	return new Promise((resolve, reject) => {
 		axios
-			.post('/revenue/addExpense', data)
+			.post('/addExpense', data)
 			.then((rev) => {
 				resolve(rev);
 			})
@@ -58,7 +58,7 @@ export const addExpense = async (data) => {
 export const updateExpense = async (data) => {
 	return new Promise((resolve, reject) => {
 		axios
-			.put('/revenue/updateExpense', data)
+			.put('/updateExpense', data)
 			.then((rev) => {
 				resolve(rev);
 			})
@@ -72,7 +72,7 @@ export const updateExpense = async (data) => {
 export const deleteExpense = async (data) => {
 	return new Promise((resolve, reject) => {
 		axios
-			.post('/revenue/deleteExpense', data)
+			.post('/deleteExpense', data)
 			.then((rev) => {
 				resolve(rev);
 			})
@@ -83,12 +83,10 @@ export const deleteExpense = async (data) => {
 	});
 };
 
-
-
 export const addStartingCapital = async (data) => {
 	return new Promise((resolve, reject) => {
 		axios
-			.post('/revenue/addStartingCapital', data)
+			.post('/addStartingCapital', data)
 			.then((rev) => {
 				resolve(rev);
 			})
@@ -101,7 +99,7 @@ export const addStartingCapital = async (data) => {
 export const updateStartingCapital = async (data) => {
 	return new Promise((resolve, reject) => {
 		axios
-			.put('/revenue/updateStartingCapital', data)
+			.put('/updateStartingCapital', data)
 			.then((rev) => {
 				resolve(rev);
 			})
@@ -115,7 +113,7 @@ export const updateStartingCapital = async (data) => {
 export const deleteStartignCapital = async (data) => {
 	return new Promise((resolve, reject) => {
 		axios
-			.post('/revenue/deleteStartingCapital', data)
+			.post('/deleteStartingCapital', data)
 			.then((rev) => {
 				resolve(rev);
 			})
@@ -125,5 +123,3 @@ export const deleteStartignCapital = async (data) => {
 			});
 	});
 };
-
-

@@ -41,7 +41,7 @@ function Login() {
 		setLoader(true);
 		e.preventDefault();
 		try {
-			let login = await axios.post('/auth/login', loginForm);
+			let login = await axios.post('/login', loginForm);
 			if (login.status === 200 || login.status === 201) {
 				let user = await getUser(login.data.token);
 				let purchasing = await getUserPurchasing();

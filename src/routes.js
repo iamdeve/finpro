@@ -15,6 +15,7 @@ import { AuthContext } from './context/context';
 import Billing from './views/Billing/Billing';
 import Settings from './views/Settings/Settings';
 import Pricing from './views/Pricing/Pricing';
+import ConfirmRegistration from './views/Auth/Confirm/Confirm';
 function Routes() {
 	const {
 		state: { isAuthenticated },
@@ -40,6 +41,7 @@ function Routes() {
 			<Route exact path='/' render={() => <Redirect to='/login' />} />
 			<Route exact path='/login' component={Login} />
 			<Route exact path='/signup' component={SignUp} />
+			<Route exact path='/verify' component={ConfirmRegistration} />
 			<Route path='*' render={() => <Redirect to='/login' />} />
 		</Switch>
 	);
