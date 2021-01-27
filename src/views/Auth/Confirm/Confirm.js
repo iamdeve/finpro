@@ -4,11 +4,7 @@ import { Link } from 'react-router-dom';
 import LOGO from '../../../assets/logo.png';
 import BGImgs from '../../../assets/sign-in-cover.jpg';
 
-function ConfirmRegistration({ email }) {
-	const [alertClass, setAlertClass] = React.useState('');
-	const [msg, setMsg] = React.useState('');
-	const [err, setErr] = React.useState('');
-	const [loader, setLoader] = React.useState(false);
+function ConfirmRegistration({ email, alertClass, setAlertClass, msg, setMsg, err, setErr, loader, setLoader }) {
 	const [confirmationForm, setConfirmationForm] = React.useState({
 		code: '',
 	});
@@ -34,7 +30,7 @@ function ConfirmRegistration({ email }) {
 			if (verify.status === 200 || verify.status === 201) {
 				setErr('');
 				setAlertClass('show');
-				confirmationForm({
+				setConfirmationForm({
 					code: '',
 				});
 				setMsg('Successfully Registered');
@@ -47,6 +43,9 @@ function ConfirmRegistration({ email }) {
 			if (e.response && e.response.data) {
 				if (e.response.data.error) {
 					setErr(e.response.data.error.message);
+				} else if (e.response.data.errors && e.response.data.errors.length > 0) {
+					console.log(e.response);
+					setErr(e.response.data.errors[0].msg);
 				} else {
 					setErr(e.response.data.message);
 				}

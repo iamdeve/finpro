@@ -163,7 +163,7 @@ function Settings() {
 												<i className='fe fe-camera'></i>
 											</span>
 										</span>
-										<img src={fileUrl !== '' && fileUrl !== null ? fileUrl : user && user.profile && fileUrl === '' ? `${BASE_URL}${user.profile}` : Profile} className='avatar-img rounded-circle' alt='profile' />
+										<img src={fileUrl !== '' && fileUrl !== null ? fileUrl : user && user.profile && fileUrl === '' ? `${user.profile}` : Profile} className='avatar-img rounded-circle' alt='profile' />
 									</div>
 								</div>
 								<div className='col ml-n2'>

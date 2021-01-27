@@ -47,7 +47,7 @@ function SignUp() {
 				setErr('');
 				setAlertClass('show');
 				setSignupForm({
-					email: '',
+					email: signupForm.email,
 					password: '',
 				});
 				setConfrim(true);
@@ -60,6 +60,9 @@ function SignUp() {
 			if (e.response && e.response.data) {
 				if (e.response.data.error) {
 					setErr(e.response.data.error.message);
+				} else if (e.response.data.errors && e.response.data.errors.length > 0) {
+					console.log(e.response);
+					setErr(e.response.data.errors[0].msg);
 				} else {
 					setErr(e.response.data.message);
 				}
@@ -84,7 +87,7 @@ function SignUp() {
 	};
 
 	return confirm ? (
-		<ConfirmRegistration email={signupForm.email} />
+		<ConfirmRegistration email={signupForm.email} alertClass={alertClass} setAlertClass={setAlertClass} setMsg={setMsg} msg={msg} err={err} setErr={setErr} loader={loader} setLoader={setLoader} />
 	) : (
 		<div className='container-fluid'>
 			<div className='row align-items-center justify-content-center'>

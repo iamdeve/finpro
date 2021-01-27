@@ -104,7 +104,7 @@ function MenuBar(props) {
 					<div style={{ flexGrow: 1 }}></div>
 					<Dropdown>
 						<Dropdown.Toggle as={CustomToggle} id='dropdown-custom-components'>
-							<img src={user && user.profile ? `${BASE_URL}${user.profile}` : Profile} alt='user profile' />
+							<img src={user && user.profile ? `${user.profile}` : Profile} alt='user profile' />
 						</Dropdown.Toggle>
 
 						<Dropdown.Menu>
